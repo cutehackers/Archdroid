@@ -1,0 +1,1 @@
+include ':sample', ':archdroid-annotations', ':archdroid-compiler', ':archdroid'
