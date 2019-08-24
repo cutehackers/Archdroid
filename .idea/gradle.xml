@@ -8,13 +8,14 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/archdroid" />
             <option value="$PROJECT_DIR$/archdroid-annotations" />
             <option value="$PROJECT_DIR$/archdroid-compiler" />
+            <option value="$PROJECT_DIR$/archdroid-runtime" />
             <option value="$PROJECT_DIR$/sample" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
+        <option name="testRunner" value="PLATFORM" />
       </GradleProjectSettings>
     </option>
   </component>

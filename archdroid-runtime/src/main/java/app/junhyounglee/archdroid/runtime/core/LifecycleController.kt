@@ -1,4 +1,4 @@
-package app.junhyounglee.archdroid.core
+package app.junhyounglee.archdroid.runtime.core
 
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager

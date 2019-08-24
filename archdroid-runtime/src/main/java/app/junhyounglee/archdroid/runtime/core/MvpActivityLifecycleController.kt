@@ -1,12 +1,16 @@
-package app.junhyounglee.archdroid.core
+package app.junhyounglee.archdroid.runtime.core
 
 import android.content.Context
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import app.junhyounglee.archdroid.runtime.core.presenter.MvpPresenter
+import app.junhyounglee.archdroid.runtime.core.view.MvpView
+import app.junhyounglee.archdroid.runtime.core.view.RootViewImpl
 
 abstract class MvpActivityLifecycleController<VIEW : MvpView, PRESENTER : MvpPresenter<VIEW>>
     : AppCompatActivity()
@@ -32,17 +36,24 @@ abstract class MvpActivityLifecycleController<VIEW : MvpView, PRESENTER : MvpPre
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(view.layoutResId)
 
-        onSetRootView(window.decorView.findViewById<FrameLayout>(android.R.id.content))
+        onRootViewCreated(window.decorView.findViewById<FrameLayout>(android.R.id.content))
+
+        lifecycle.addObserver(presenter)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        lifecycle.removeObserver(presenter)
     }
 
     abstract fun createMvpView(): VIEW
 
     abstract fun onCreatePresenter(): PRESENTER
 
-    open fun onSetRootView(container: ViewGroup) {
+    @CallSuper
+    open fun onRootViewCreated(container: ViewGroup) {
         view.rootView = container
     }
 }
@@ -58,9 +69,12 @@ abstract class MvpActivityLifecycleController<VIEW : MvpView, PRESENTER : MvpPre
 
 // step 2. example
 interface SampleView : MvpView
+
 class SamplePresenter(view: SampleView) : MvpPresenter<SampleView>(view)
 
-abstract class MvpSampleActivityView : MvpActivityLifecycleController<SampleView, SamplePresenter>(), SampleView {
+abstract class MvpSampleActivityView
+    : MvpActivityLifecycleController<SampleView, SamplePresenter>()
+    , SampleView {
 
     private val impl = RootViewImpl()
 
@@ -75,6 +89,9 @@ abstract class MvpSampleActivityView : MvpActivityLifecycleController<SampleView
         set(value) {
             impl.container = value
         }
+
+    override val isRootViewAlive: Boolean
+        get() = impl.isViewAlive
 
     override fun createMvpView(): SampleView = this
 

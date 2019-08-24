@@ -1,4 +1,4 @@
-package app.junhyounglee.archdroid;
+package app.junhyounglee.archdroid.runtime;
 
 import android.content.Context;
 

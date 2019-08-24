@@ -1,8 +1,8 @@
 package app.junhyounglee.archdroid.sample
 
-import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import java.lang.IllegalArgumentException
+import app.junhyounglee.archdroid.annotations.MvpActivityView
+import app.junhyounglee.archdroid.runtime.core.view.MvpView
 
 /**
  * Archdroid (app.junhyounglee.archdroid.sample)
@@ -11,7 +11,7 @@ import java.lang.IllegalArgumentException
  *  - archdroid-compiler
  *  - archdroid
  *
- * Rule1. Basically, view doesn't care about android lifecycle events (ex. onCreate, onResume ...). View only cares
+ * Rule1. Basically, a view doesn't care about android lifecycle events (ex. onCreate, onResume ...). View only cares
  *  visual components.
  *
  * @MvpActivityView(SampleView::class)
@@ -30,12 +30,12 @@ import java.lang.IllegalArgumentException
  *
  *
  * @MvpActivityLifecycleController
- * @RequireMvpView(SampleView::class)
+ * @BindMvpView(SampleView::class)
  * class SampleActivity : MvpSampleActivityLifecycleController {
  *
  *  ...
  *
- *  @MvpCommonView
+ *  @MvpDummyView
  *  @BindMvpPresenter(SamplePresenter::class)
  *  class SampleView : MvpSampleView {
  *
@@ -50,11 +50,11 @@ import java.lang.IllegalArgumentException
  * }
  *
  */
+@MvpActivityView(SampleView::class)
 class SampleActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+}
 
-    }
-
+interface SampleView : MvpView {
+    fun say(message: String)
 }
