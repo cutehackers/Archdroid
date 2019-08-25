@@ -1,7 +1,9 @@
 package app.junhyounglee.archdroid.sample
 
 import androidx.appcompat.app.AppCompatActivity
+import app.junhyounglee.archdroid.annotations.BindMvpPresenter
 import app.junhyounglee.archdroid.annotations.MvpActivityView
+import app.junhyounglee.archdroid.runtime.core.presenter.MvpPresenter
 import app.junhyounglee.archdroid.runtime.core.view.MvpView
 
 /**
@@ -9,7 +11,7 @@ import app.junhyounglee.archdroid.runtime.core.view.MvpView
  *  - sample
  *  - archdroid-annotations
  *  - archdroid-compiler
- *  - archdroid
+ *  - archdroid-runtime
  *
  * Rule1. Basically, a view doesn't care about android lifecycle events (ex. onCreate, onResume ...). View only cares
  *  visual components.
@@ -51,6 +53,7 @@ import app.junhyounglee.archdroid.runtime.core.view.MvpView
  *
  */
 @MvpActivityView(SampleView::class)
+@BindMvpPresenter(SamplePresenter::class)
 class SampleActivity : AppCompatActivity() {
 
 }
@@ -58,3 +61,5 @@ class SampleActivity : AppCompatActivity() {
 interface SampleView : MvpView {
     fun say(message: String)
 }
+
+class SamplePresenter(view: SampleView) : MvpPresenter<SampleView>(view)

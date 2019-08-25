@@ -9,6 +9,7 @@ import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
+import javax.lang.model.type.DeclaredType
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 
@@ -35,6 +36,8 @@ abstract class ArchCoordinator(private val processingEnv: ProcessingEnvironment)
     }
 
     abstract fun process(roundEnv: RoundEnvironment): Boolean
+
+    fun toTypeElement(type: DeclaredType) = type.asElement() as TypeElement
 
     fun warning(message: String, annotation: Element? = null) {
         processingEnv.warning(message, annotation)

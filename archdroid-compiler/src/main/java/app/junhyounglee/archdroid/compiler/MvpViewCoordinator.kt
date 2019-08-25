@@ -3,6 +3,7 @@ package app.junhyounglee.archdroid.compiler
 import app.junhyounglee.archdroid.annotations.BindMvpPresenter
 import app.junhyounglee.archdroid.annotations.MvpActivityView
 import com.google.auto.common.SuperficialValidation
+import com.squareup.kotlinpoet.asTypeName
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.*
@@ -28,6 +29,7 @@ import javax.lang.model.type.TypeMirror
  *     abstract class MvpSampleActivityView
  *          : MvpActivityLifecycleController<SampleView, SamplePresenter>()
  *          , SampleView {
+ *
  */
 class MvpViewCoordinator(processingEnv: ProcessingEnvironment) : ArchCoordinator(processingEnv) {
 
@@ -54,7 +56,7 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment) : ArchCoordinator
      * @MvpActivityView(SampleView::class)
      * @BindMvpPresenter(SamplePresenter::class)
      * class SampleActivityView
-     * @return true if parse MvpActivityView, BindMvpPresenter annotation successfully, otherwise
+     * @return true if MvpActivityView, BindMvpPresenter annotation parsed successfully, otherwise
      * false
      */
     private fun parseMvpActivityView(annotatedType: TypeElement): Boolean {
@@ -106,7 +108,53 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment) : ArchCoordinator
                 // BindMvpPresenter annotation
                 annotationName.contentEquals(BindMvpPresenter::class.simpleName) -> {
                     annotationMirror.elementValues.forEach { entry: Map.Entry<ExecutableElement, AnnotationValue> ->
-                        val typeMirror = entry.value.value as TypeMirror
+                        if (entry.key.simpleName.contentEquals("presenter")) {
+                            val typeMirror = entry.value.value as TypeMirror
+                            warning("Archdroid> BindMvpPresenter argument key: ${entry.key.simpleName}, value: ${entry.value.value}")
+
+                            if (!isClassType(typeMirror)) {
+                                error(entry.key, "@BindMvpPresenter should have appropriate presenter class.")
+                                return@parseMvpActivityView false
+                            }
+
+                            val presenterType = typeMirror as DeclaredType
+                            val presenter = presenterType.asElement()
+
+
+                            // check if it's an abstract class
+                            if (presenter.modifiers.contains(Modifier.ABSTRACT)) {
+                                error(entry.key, "Abstract class ${presenter.simpleName} cannot be annotated with @BindMvpPresenter.")
+                                return@parseMvpActivityView false
+                            }
+
+                            val parent: TypeMirror = (presenterType.asElement() as TypeElement).superclass
+                            val parentType = (parent as DeclaredType)
+
+                            // check if the class extends from MvpPresenter<VIEW>
+                            if (!isSubTypeOfType(toTypeElement(parentType).asType(), MVP_PRESENTER_TYPE)) {
+                                error(entry.key, "Class ${presenter.simpleName} should extend from MvpPresenter for @BindMvpPresenter. current parent type is ${toTypeElement(parentType).asType()}")
+                                return@parseMvpActivityView false
+                            }
+
+                            // check if a public constructor containing MvpView inherited view as a parameter is given
+                            var found = false
+                            loop@ for (enclosed in presenter.enclosedElements) {
+                                if (enclosed.kind == ElementKind.CONSTRUCTOR) {
+                                    val constructor = enclosed as ExecutableElement
+                                    for (param: VariableElement in constructor.parameters) {
+                                        // has MvpView parameter
+                                        if (isSubTypeOfType(param.asType(), MVP_VIEW_TYPE)) {
+                                            found = true
+                                            break
+                                        }
+                                    }
+                                }
+                            }
+                            if (!found) {
+                                error(entry.key, "@BindMvpPresenter requires a constructor that contains a view extends from MvpView.")
+                                return@parseMvpActivityView false
+                            }
+                        }
                     }
                 }
             }
@@ -146,6 +194,10 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment) : ArchCoordinator
 
     private fun isInterfaceType(typeMirror: TypeMirror): Boolean {
         return typeMirror is DeclaredType && typeMirror.asElement().kind == ElementKind.INTERFACE
+    }
+
+    private fun isClassType(typeMirror: TypeMirror): Boolean {
+        return typeMirror is DeclaredType && typeMirror.asElement().kind == ElementKind.CLASS
     }
 
     private fun isSubTypeOfType(typeMirror: TypeMirror, otherType: String): Boolean {
@@ -207,5 +259,6 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment) : ArchCoordinator
 
     companion object {
         private const val MVP_VIEW_TYPE = "app.junhyounglee.archdroid.runtime.core.view.MvpView"
+        private const val MVP_PRESENTER_TYPE = "app.junhyounglee.archdroid.runtime.core.presenter.MvpPresenter<VIEW>"
     }
 }
