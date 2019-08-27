@@ -1,1 +1,1 @@
-include ':sample', ':archdroid-annotations', ':archdroid-compiler', ':archdroid-runtime'
+include ':sample', ':archroid-annotations', ':archroid-compiler', ':archroid-runtime'
