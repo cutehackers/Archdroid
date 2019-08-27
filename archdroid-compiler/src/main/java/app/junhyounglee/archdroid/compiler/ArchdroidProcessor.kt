@@ -92,15 +92,18 @@ class ArchdroidProcessor : AbstractProcessor() {
         }
     }
 
+    /**
+     * @return If true is returned, the annotation types are claimed and subsequent processors will
+     * not be asked to process them; if false is returned, the annotation types are unclaimed and
+     * subsequent processors may be asked to process them.
+     */
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
         if (annotations.isEmpty()) {
             return true
         }
 
         coordinators.forEach { coordinator ->
-            if (coordinator.process(roundEnv)) {
-                return true
-            }
+            coordinator.process(roundEnv)
         }
 
         return false
