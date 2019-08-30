@@ -5,16 +5,18 @@ import com.google.auto.common.SuperficialValidation
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.asTypeName
+import com.sun.source.util.Trees
+import com.sun.tools.javac.code.Symbol
+import com.sun.tools.javac.tree.JCTree
+import com.sun.tools.javac.tree.TreeScanner
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.util.*
 import javax.annotation.processing.Filer
 import javax.annotation.processing.Messager
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
-import javax.lang.model.element.Element
-import javax.lang.model.element.ElementKind
-import javax.lang.model.element.PackageElement
-import javax.lang.model.element.TypeElement
+import javax.lang.model.element.*
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.MirroredTypeException
 import javax.lang.model.type.TypeKind
@@ -26,9 +28,10 @@ import javax.lang.model.util.Types
  * ArchCoordinator is an object that parse annotation and create architecture objects such as
  * MvpSampleActivityView, MvpSampleFragmentView.
  */
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class ArchCoordinator(
-    private val processingEnv: ProcessingEnvironment,
-    private val klassType: Class<out Annotation>) {
+    protected val processingEnv: ProcessingEnvironment,
+    protected val klassType: Class<out Annotation>) {
 
     protected val filer: Filer by lazy {
         processingEnv.filer
@@ -44,6 +47,17 @@ abstract class ArchCoordinator(
 
     protected val types: Types by lazy {
         processingEnv.typeUtils
+    }
+
+    private lateinit var trees: Trees
+    private val rScanner = RScanner()
+
+    init {
+        try {
+            trees = Trees.instance(processingEnv)
+        } catch (e: IllegalArgumentException) {
+            error("Error while getting tree instance of annotation processing environment", e)
+        }
     }
 
     fun process(roundEnv: RoundEnvironment) {
@@ -135,6 +149,12 @@ abstract class ArchCoordinator(
         return classType.qualifiedName.toString()
     }
 
+    fun getSimpeTypeName(typeMirror: TypeMirror): String {
+        val declaredType = typeMirror as DeclaredType
+        val classType = declaredType.asElement() as TypeElement
+        return classType.simpleName.toString()
+    }
+
     fun getQualifiedTypeName(klass: Class<*>): String? = try {
         klass.canonicalName
     } catch (e: MirroredTypeException) {
@@ -167,6 +187,16 @@ abstract class ArchCoordinator(
         processingEnv.error(stackTrace?.run { "$msg\n$this" } ?: msg, annotation)
     }
 
+    fun error(message: String, exception: Exception? = null) {
+        val stackTrace = exception?.run {
+            StringWriter().apply {
+                this@run.printStackTrace(PrintWriter(this))
+            }
+        }
+
+        processingEnv.error(stackTrace?.run { "$message\n$this" } ?: message)
+    }
+
     fun getName(e: Element): String {
         return if (e.kind.isClass || e.kind.isInterface) {
             elements.getBinaryName(e as TypeElement).toString()
@@ -177,8 +207,65 @@ abstract class ArchCoordinator(
         }
     }
 
+    protected fun getResourceIdentifier(element: Element, annotationMirror: AnnotationMirror, annotationValue: AnnotationValue, value: Int): Id {
+        val tree: JCTree = trees.getTree(element, annotationMirror, annotationValue) as JCTree
+        rScanner.reset()
+        tree.accept(rScanner)
+        if (rScanner.resourceIds.isNotEmpty()) {
+            return rScanner.resourceIds.values.iterator().next()
+        }
+        return Id(value)
+    }
+
+
+    private class RScanner : TreeScanner() {
+        internal var resourceIds: MutableMap<Int, Id> = LinkedHashMap()
+
+        override fun visitSelect(jcFieldAccess: JCTree.JCFieldAccess) {
+            val symbol = jcFieldAccess.sym
+            if (symbol.enclosingElement != null
+                && symbol.enclosingElement.enclosingElement != null
+                && symbol.enclosingElement.enclosingElement.enclClass() != null
+            ) {
+                try {
+                    val value =
+                        Objects.requireNonNull<Any>((symbol as Symbol.VarSymbol).constantValue) as Int
+                    resourceIds[value] = Id(value, symbol)
+                } catch (ignored: Exception) {
+                }
+
+            }
+        }
+
+        override fun visitLiteral(jcLiteral: JCTree.JCLiteral?) {
+            try {
+                val value = jcLiteral!!.value as Int
+                resourceIds[value] = Id(value)
+            } catch (ignored: Exception) {
+            }
+
+        }
+
+        internal fun reset() {
+            resourceIds.clear()
+        }
+    }
 
     companion object {
+
         fun toTypeElement(type: DeclaredType) = type.asElement() as TypeElement
+
+        fun capitalize(text: String): String {
+            if (text.isEmpty() || text.isBlank()) {
+                return text
+            }
+
+            val firstChar = text[0]
+            if (firstChar.isLowerCase()) {
+                return firstChar.toUpperCase() + text.substring(1)
+            }
+
+            return text
+        }
     }
 }

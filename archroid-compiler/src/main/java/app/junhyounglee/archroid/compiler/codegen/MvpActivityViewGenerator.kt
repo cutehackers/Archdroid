@@ -1,5 +1,6 @@
 package app.junhyounglee.archroid.compiler.codegen
 
+import app.junhyounglee.archroid.compiler.Id
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import javax.annotation.processing.Filer
@@ -9,7 +10,7 @@ class MvpActivityViewGenerator(filer: Filer)
 
     override fun onGenerate(argument: MvpActivityViewClassArgument): TypeSpec {
         return argument.run {
-            TypeSpec.classBuilder(argument.className.simpleName)
+            val builder = TypeSpec.classBuilder(argument.className.simpleName)
                 .addKdoc(DOCUMENTATION)
                 .addModifiers(KModifier.PUBLIC)
                 .addModifiers(KModifier.ABSTRACT)
@@ -21,7 +22,10 @@ class MvpActivityViewGenerator(filer: Filer)
                 .addProperty(getPropertyIsRootViewAlive())
                 .addFunction(getFunCreateMvpView(argument))
                 .addFunction(getFunOnCreatePresenter(argument))
-                .build()
+
+            layoutResId?.let {
+                builder.addProperty(getPropertyLayoutResId(it)).build()
+            } ?: builder.build()
         }
     }
 
@@ -42,6 +46,13 @@ class MvpActivityViewGenerator(filer: Filer)
         return PropertySpec.builder("context", ClassName(CONTEXT_PACKAGE, CONTEXT_CLASS).copy(nullable = true))
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
             .getter(FunSpec.getterBuilder().addStatement("return this").build())
+            .build()
+    }
+
+    private fun getPropertyLayoutResId(resourceId: Id): PropertySpec {
+        return PropertySpec.builder("layoutResId", Int::class)
+            .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
+            .getter(FunSpec.getterBuilder().addStatement("return %L", resourceId.code).build())
             .build()
     }
 

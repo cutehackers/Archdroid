@@ -18,6 +18,7 @@ This project is mostly inspired by [SVC](https://github.com/BansookNam/svc) gith
 - http://hannesdorfmann.com/annotation-processing/annotationprocessing101
 - http://hauchee.blogspot.com/2016/01/compile-time-annotation-processing-code-generation.html
 - http://hauchee.blogspot.com/2015/12/compile-time-annotation-processing-getting-class-value.html
+- https://www.baeldung.com/kotlin-annotations
 
 ## License
 ---

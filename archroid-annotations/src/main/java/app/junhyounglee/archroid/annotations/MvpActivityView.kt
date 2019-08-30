@@ -1,7 +1,8 @@
 package app.junhyounglee.archroid.annotations
 
+import androidx.annotation.LayoutRes
 import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FILE)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class MvpActivityView(val view: KClass<*>)
+annotation class MvpActivityView(val view: KClass<*>, @LayoutRes val layoutResId: Int = 0)

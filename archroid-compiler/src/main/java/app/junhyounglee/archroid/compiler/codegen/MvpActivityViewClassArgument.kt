@@ -1,5 +1,6 @@
 package app.junhyounglee.archroid.compiler.codegen
 
+import app.junhyounglee.archroid.compiler.Id
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeName
 
@@ -7,7 +8,8 @@ class MvpActivityViewClassArgument(
     targetTypeName: TypeName,
     className: ClassName,
     val viewType: ClassName,
-    val presenterType: ClassName
+    val presenterType: ClassName,
+    val layoutResId: Id? = null
 ) : ClassArgument(targetTypeName, className) {
 
     override fun getFileName(): String = "MvpSampleActivityView"
@@ -18,6 +20,7 @@ class MvpActivityViewClassArgument(
         private lateinit var className: ClassName
         private lateinit var viewType: ClassName
         private lateinit var presenterType: ClassName
+        private var layoutResId: Id? = null
 
         fun targetTypeName(targetTypeName: TypeName) = apply { this.targetTypeName = targetTypeName }
 
@@ -27,11 +30,14 @@ class MvpActivityViewClassArgument(
 
         fun presenterType(presenterType: ClassName) = apply { this.presenterType = presenterType }
 
+        fun contentView(layoutResId: Id) = apply { this.layoutResId = layoutResId }
+
         fun build() = MvpActivityViewClassArgument(
             targetTypeName,
             className,
             viewType,
-            presenterType
+            presenterType,
+            layoutResId
         )
     }
 

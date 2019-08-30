@@ -1,6 +1,5 @@
 package app.junhyounglee.archroid.sample
 
-import androidx.appcompat.app.AppCompatActivity
 import app.junhyounglee.archroid.annotations.BindMvpPresenter
 import app.junhyounglee.archroid.annotations.MvpActivityView
 import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
@@ -17,10 +16,18 @@ import kotlinx.android.synthetic.main.activity_sample.view.*
  * Rule1. Basically, a view doesn't care about android lifecycle events (ex. onCreate, onResume ...). View only cares
  *  visual components.
  *
+ * @MvpActivityView(SampleView::class, layoutResId = R.layout.activity_sample)
+ * @BindMvpPresenter(SamplePresenter::class)
+ * class SampleActivityView : MvpSampleActivityView {
+ *
+ * }
+ *
  * @MvpActivityView(SampleView::class)
  * @BindMvpPresenter(SamplePresenter::class)
- * class SampleActivity : MvpSampleActivityView {
+ * class SampleActivityView : MvpSampleActivityView {
  *
+ *   override val layoutResId: Int
+ *     get() = R.layout.activity_sample
  * }
  *
  * SampleViewActions
@@ -34,7 +41,7 @@ import kotlinx.android.synthetic.main.activity_sample.view.*
  *
  * @MvpActivityLifecycleController
  * @BindMvpView(SampleView::class)
- * class SampleActivity : MvpSampleActivityLifecycleController {
+ * class SampleActivityView : MvpSampleActivityLifecycleController {
  *
  *  ...
  *
@@ -53,12 +60,9 @@ import kotlinx.android.synthetic.main.activity_sample.view.*
  * }
  *
  */
-@MvpActivityView(SampleView::class)
+@MvpActivityView(SampleView::class, layoutResId = R.layout.activity_sample)
 @BindMvpPresenter(SamplePresenter::class)
-class SampleActivity : MvpSampleActivityView() {
-
-    override val layoutResId: Int
-        get() = R.layout.activity_sample
+class SampleActivityView : MvpSampleActivityView() {
 
     override fun say(message: String) {
         rootView.titleView.text = message

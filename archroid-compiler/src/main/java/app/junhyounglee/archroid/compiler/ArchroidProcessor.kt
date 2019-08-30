@@ -125,6 +125,16 @@ class ArchroidProcessor : AbstractProcessor() {
         processingEnv.error(stackTrace?.run { "$msg\n$this" } ?: msg, annotation)
     }
 
+    fun error(message: String, exception: Exception? = null) {
+        val stackTrace = exception?.run {
+            StringWriter().apply {
+                this@run.printStackTrace(PrintWriter(this))
+            }
+        }
+
+        processingEnv.error(stackTrace?.run { "$message\n$this" } ?: message)
+    }
+
 
     companion object {
         const val OPTION_MIN_SDK = "archroid_min_sdk"

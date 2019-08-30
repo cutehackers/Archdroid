@@ -62,7 +62,6 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment)
         // TODO build class name with given primary string ex) Mvp{Sample}ActivityView
         val builder = MvpActivityViewClassArgument.builder()
             .targetTypeName(getTargetTypeName(annotatedType))
-            .className(ClassName(getPackage(annotatedType).qualifiedName.toString(), "MvpSampleActivityView"))
 
         /*
          * Step 2. validate annotations for this class
@@ -83,21 +82,33 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment)
                 // MvpActivityView annotation
                 annotationName.contentEquals(MvpActivityView::class.simpleName) -> {
                     annotationMirror.elementValues.forEach { entry: Map.Entry<ExecutableElement, AnnotationValue> ->
-                        if (entry.key.simpleName.contentEquals("view")) {
-                            // entry.value.value == List<ClassType>
-                            // val typeMirrors = entry.value.value as List<TypeMirror>
-                            // entry.value.value == ClassType
-                            val typeMirror = entry.value.value as TypeMirror
-                            warning("Archroid> MvpActivityView argument key: ${entry.key.simpleName}, value: ${entry.value.value}, interface(${isInterfaceType(typeMirror)}), subTypeOf(${isSubTypeOfType(typeMirror, MVP_VIEW_TYPE)})")
+                        when {
+                            // @param view
+                            entry.key.simpleName.contentEquals("view") -> {
+                                // entry.value.value == List<ClassType>
+                                // val typeMirrors = entry.value.value as List<TypeMirror>
+                                // entry.value.value == ClassType
+                                val typeMirror = entry.value.value as TypeMirror
+                                warning("Archroid> MvpActivityView argument key: ${entry.key.simpleName}, value: ${entry.value.value}, interface(${isInterfaceType(typeMirror)}), subTypeOf(${isSubTypeOfType(typeMirror, MVP_VIEW_TYPE)})")
 
-                            // interface that extends MvpView
-                            if (!isInterfaceType(typeMirror) || !isSubTypeOfType(typeMirror, MVP_VIEW_TYPE)) {
-                                error(entry.key, "@MvpActivityView's view parameter should be an interface that extends from MvpView.")
-                                return@parseMvpActivityView null
+                                // interface that extends MvpView
+                                if (!isInterfaceType(typeMirror) || !isSubTypeOfType(typeMirror, MVP_VIEW_TYPE)) {
+                                    error(entry.key, "@MvpActivityView's view parameter should be an interface that extends from MvpView.")
+                                    return@parseMvpActivityView null
+                                }
+
+                                // set view class argument
+                                val viewType = ClassName.bestGuess(getQualifiedTypeName(typeMirror))
+                                builder.viewType(viewType)
+                                    .className(ClassName(getPackage(annotatedType).qualifiedName.toString(), createClassName(getSimpeTypeName(typeMirror))))
                             }
 
-                            // set view class argument
-                            builder.viewType(ClassName.bestGuess(getQualifiedTypeName(typeMirror)))
+                            // @param layoutResId (optional)
+                            entry.key.simpleName.contentEquals("layoutResId") -> {
+                                warning("Archroid> MvpActivityView argument key: ${entry.key.simpleName}, value: ${entry.value.value}")
+                                val layoutResId = getResourceIdentifier(annotatedType, annotationMirror, entry.value, entry.value.value as Int)
+                                builder.contentView(layoutResId)
+                            }
                         }
                     }
                 }
@@ -168,6 +179,23 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment)
         }
 
         return builder.build()
+    }
+
+    /**
+     * @param simpleViewTypeName view interface name that passed to @MvpActivityView view parameter
+     * @exception IllegalStateException if parameter simpleViewTypeName is empty or blank.
+     */
+    private fun createClassName(simpleViewTypeName: String): String {
+        check(!simpleViewTypeName.isBlank()) { "View interface extends from MvpView should be given to @MvpActivityView" }
+
+        val index = simpleViewTypeName.lastIndexOf("View", simpleViewTypeName.length, true)
+        val name = if (index != -1) {
+            // found
+            simpleViewTypeName.substring(0, index)
+        } else {
+            simpleViewTypeName
+        }
+        return "Mvp${capitalize(name)}ActivityView"
     }
 
     override fun onGenerateSourceFile(classArgument: ClassArgument) {
