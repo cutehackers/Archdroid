@@ -5,13 +5,10 @@ This project is mostly inspired by [SVC](https://github.com/BansookNam/svc) gith
 - This library is aimed at providing an easy environment that is convenient to manage or refactor business logic by replacing repetitive codes with annotation.
 
 ## Implementation
----
 ### MVP (building)
 
 ## Download
----
 ## Reference
----
 - https://github.com/BansookNam/svc
 - https://jakewharton.github.io/butterknife/
 - https://docs.oracle.com/javase/tutorial/java/annotations/index.html
@@ -21,7 +18,6 @@ This project is mostly inspired by [SVC](https://github.com/BansookNam/svc) gith
 - https://www.baeldung.com/kotlin-annotations
 
 ## License
----
 Copyright 2019 Jun Hyoung Lee
 
 Licensed under the Apache License, Version 2.0 (the "License");
