@@ -21,7 +21,7 @@ import app.junhyounglee.archroid.runtime.core.view.MvpView
  *  [MvpPresenter class]
  *  class SamplePresenter(view: SampleView) : MvpPresenter<SampleView>(view)
  *
- * auto-generated code will be:
+ * auto-generated code by archroid-compiler will be:
  *  abstract class MvpSampleActivityView
  *    : MvpActivityLifecycleController<SampleView, SamplePresenter>()
  *    , SampleView {
@@ -47,6 +47,11 @@ import app.junhyounglee.archroid.runtime.core.view.MvpView
  *
  *    override fun onCreatePresenter() = SamplePresenter(this)
  *  }
+ *
+ *  Finally, actual MVP activity view  will be like this:
+ *   @MvpActivityView(SampleView::class, layoutResId = R.layout.activity_sample)
+ *   @BindMvpPresenter(SamplePresenter::class)
+ *   class SampleActivityView : MvpSampleActivityView()
  */
 abstract class MvpActivityLifecycleController<VIEW : MvpView, PRESENTER : MvpPresenter<VIEW>>
     : AppCompatActivity()
