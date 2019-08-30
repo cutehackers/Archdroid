@@ -3,12 +3,11 @@ package app.junhyounglee.archroid.runtime.core.view
 import android.content.Context
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
-import androidx.lifecycle.LifecycleOwner
 
 /**
  * architecture base view that has android context and view.
  */
-interface ArchView : LifecycleOwner {
+interface ArchView {
 
     val context: Context?
 
