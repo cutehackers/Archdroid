@@ -13,14 +13,17 @@ import kotlinx.android.synthetic.main.activity_sample.view.*
  *  - archroid-compiler
  *  - archroid-runtime
  *
- * Rule1. Basically, a view doesn't care about android lifecycle events (ex. onCreate, onResume ...). View only cares
- *  visual components.
+ * Case 1. create an Activity that will serve as a MVP view
+ *
+ * MvpActivityView 1. with layoutResId (automatically bound with an Activity>
  *
  * @MvpActivityView(SampleView::class, layoutResId = R.layout.activity_sample)
  * @BindMvpPresenter(SamplePresenter::class)
  * class SampleActivityView : MvpSampleActivityView {
  *
  * }
+ *
+ * MvpActivityView 2. without layoutResId. manual implementation
  *
  * @MvpActivityView(SampleView::class)
  * @BindMvpPresenter(SamplePresenter::class)
@@ -30,35 +33,49 @@ import kotlinx.android.synthetic.main.activity_sample.view.*
  *     get() = R.layout.activity_sample
  * }
  *
- * SampleViewActions
+ * Case 2. for the MVP views that doesn't have any methods
  *
- * @MvpPresenter
- * @BindMvpView(SampleView::class)
- * class SamplePresenter : MvpSamplePresenter {
+ * @MvpActivityView(layoutResId = R.layout.activity_sample)
+ * @BindMvpPresenter(SamplePresenter::class)
+ * class SampleActivityView : MvpSampleActivityView {
  *
  * }
  *
+ * SampleViewEventListeners
+ *
+ * Case 3. If you want to separate MVP view from Activity, you will divide @MvpActivityView into two
+ *  classes, @MvpActivityLifecycleController and @MvpView. Basically, a view doesn't care android
+ *  lifecycle events (ex. onCreate, onResume ...) in this case. A view only cares visual components.
+ *
+ * @MvpView
+ *  layoutResId: compulsory parameter of which annotation delegates MVP view to the concrete class
+ *  view: optional
+ *
+ * @MvpView(SampleView::class, layoutResId = R.layout.activity_sample)
+ * @BindMvpPresenter(SamplePresenter::class)
+ * class SampleViewImpl : MvpSampleView {
+ *
+ * }
+ *
+ * @MvpActivityLifecycleController
+ * @BindMvpView(SampleViewImpl::class)
+ * class SampleActivityLifecycleController : MvpSampleActivityLifecycleController {
+ *
+ * }
+ *
+ * Case 4.
+ *
+ * @MvpView(layoutResId = R.layout.activity_sample)
+ * @BindMvpPresenter(SamplePresenter::class)
+ * class SampleView : MvpSampleView {
+ *
+ * }
  *
  * @MvpActivityLifecycleController
  * @BindMvpView(SampleView::class)
- * class SampleActivityView : MvpSampleActivityLifecycleController {
- *
- *  ...
- *
- *  @MvpDummyView
- *  @BindMvpPresenter(SamplePresenter::class)
- *  class SampleView : MvpSampleView {
- *
- *  }
+ * class SampleActivityLifecycleController : MvpSampleActivityLifecycleController {
  *
  * }
- *
- *
- * @RequireMvpView(SampleView::class)
- * class MvpActivityView : MvpActivityLifecycleController {
- *
- * }
- *
  */
 @MvpActivityView(SampleView::class, layoutResId = R.layout.activity_sample)
 @BindMvpPresenter(SamplePresenter::class)
