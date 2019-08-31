@@ -4,8 +4,38 @@ This project is mostly inspired by [SVC](https://github.com/BansookNam/svc) gith
 - This library provides simple lightweight framework that generates architecture related codes instead of developers using annotaion.
 - This library is aimed at providing an easy environment that is convenient to manage or refactor business logic by replacing repetitive codes with annotation.
 
-## Implementation
-### MVP (building)
+## MVP implementation (building) 
+### Prerequisites
+To build the components, you will require two things
+- View interface (MvpView)
+- Presenter (MvpPresenter)
+  
+```kotlin
+interface SampleView : MvpView {
+    fun say(message: String)
+}
+
+class SamplePresenter(view: SampleView) : MvpPresenter<SampleView>(view) {
+
+    override fun onResume() {
+        super.onResume()
+        view.say("Hello Archroid!")
+    }
+}
+```
+
+### MvpActivityView
+```kotlin
+@MvpActivityView(SampleView::class, layoutResId = R.layout.activity_sample)
+@BindMvpPresenter(SamplePresenter::class)
+class SampleActivityView : MvpSampleActivityView() {
+
+    override fun say(message: String) {
+        ...
+    }
+
+}
+```
 
 ## Download
 ## Reference
