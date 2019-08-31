@@ -1,7 +1,7 @@
 # Archroid
-Android architecture library that generates boilerplate codes through annotation processing.
+Android architecture library that generates boilerplate codes through annotation processing.<br/>
 This project is mostly inspired by [SVC](https://github.com/BansookNam/svc) github library project, which provides different pattern called SVC (Screen, View, ControlTower). Those who are interested in the pattern, please visit the repository.
-- This library will produce boilerplate codes through annotation processing when building architecture from android app.
+- This library provides simple lightweight framework that generates architecture related codes instead of developers using annotaion.
 - This library is aimed at providing an easy environment that is convenient to manage or refactor business logic by replacing repetitive codes with annotation.
 
 ## Implementation
