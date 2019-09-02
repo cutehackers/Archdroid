@@ -17,25 +17,26 @@ import kotlinx.android.synthetic.main.activity_sample.view.*
  *
  * MvpActivityView 1. with layoutResId (automatically bound with an Activity>
  *
+ * interface SampleView : MvpView {
+ *  ...
+ * }
+ *
+ * class SamplePresenter(view: SampleView) : MvpPresenter<SampleView>(view) {
+ *  ...
+ * }
+ *
  * @MvpActivityView(SampleView::class, layoutResId = R.layout.activity_sample)
  * @BindMvpPresenter(SamplePresenter::class)
  * class SampleActivityView : MvpSampleActivityView {
  *
  * }
  *
- * MvpActivityView 2. without layoutResId. manual implementation
+ * Case 2. Just extends MvpView interface if you don't have contract view-presenter methods yet.
+ *  It is a MVP view doesn't have any methods.
  *
- * @MvpActivityView(SampleView::class)
- * @BindMvpPresenter(SamplePresenter::class)
- * class SampleActivityView : MvpSampleActivityView {
+ * class SamplePresenter(view: MvpView) : MvpPresenter<MvpView>(view)
  *
- *   override val layoutResId: Int
- *     get() = R.layout.activity_sample
- * }
- *
- * Case 2. for the MVP views that doesn't have any methods
- *
- * @MvpActivityView(layoutResId = R.layout.activity_sample)
+ * @MvpActivityView(MvpView::class, layoutResId = R.layout.activity_sample)
  * @BindMvpPresenter(SamplePresenter::class)
  * class SampleActivityView : MvpSampleActivityView {
  *

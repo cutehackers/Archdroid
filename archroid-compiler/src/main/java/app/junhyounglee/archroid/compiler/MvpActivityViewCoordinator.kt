@@ -31,7 +31,7 @@ import javax.lang.model.type.TypeMirror
  *          , SampleView {
  *
  */
-class MvpViewCoordinator(processingEnv: ProcessingEnvironment)
+class MvpActivityViewCoordinator(processingEnv: ProcessingEnvironment)
     : ArchCoordinator(processingEnv, MvpActivityView::class.java) {
 
     override fun onRoundProcess(roundEnv: RoundEnvironment, element: Element): ClassArgument? {
@@ -61,7 +61,7 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment)
 
         // TODO build class name with given primary string ex) Mvp{Sample}ActivityView
         val builder = MvpActivityViewClassArgument.builder()
-            .targetTypeName(getTargetTypeName(annotatedType))
+            .setTargetTypeName(getTargetTypeName(annotatedType))
 
         /*
          * Step 2. validate annotations for this class
@@ -83,7 +83,7 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment)
                 annotationName.contentEquals(MvpActivityView::class.simpleName) -> {
                     annotationMirror.elementValues.forEach { entry: Map.Entry<ExecutableElement, AnnotationValue> ->
                         when {
-                            // @param view
+                            // @param view (optional)
                             entry.key.simpleName.contentEquals("view") -> {
                                 // entry.value.value == List<ClassType>
                                 // val typeMirrors = entry.value.value as List<TypeMirror>
@@ -99,15 +99,23 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment)
 
                                 // set view class argument
                                 val viewType = ClassName.bestGuess(getQualifiedTypeName(typeMirror))
-                                builder.viewType(viewType)
-                                    .className(ClassName(getPackage(annotatedType).qualifiedName.toString(), createClassName(getSimpeTypeName(typeMirror))))
+                                builder.setViewType(viewType)
+                                    .setClassName(ClassName(getPackage(annotatedType).qualifiedName.toString(), createClassName(getSimpeTypeName(typeMirror))))
                             }
 
-                            // @param layoutResId (optional)
+                            // @param layoutResId
                             entry.key.simpleName.contentEquals("layoutResId") -> {
                                 warning("Archroid> MvpActivityView argument key: ${entry.key.simpleName}, value: ${entry.value.value}")
-                                val layoutResId = getResourceIdentifier(annotatedType, annotationMirror, entry.value, entry.value.value as Int)
-                                builder.contentView(layoutResId)
+
+                                val layoutResId = entry.value.value as Int
+                                if (layoutResId == 0) {
+                                    error(entry.key, "@MvpActivityView's layoutResId parameter should be a valid resource id.")
+                                    return@parseMvpActivityView null
+                                }
+
+                                // set content layout resource id
+                                val contentViewId = getResourceIdentifier(annotatedType, annotationMirror, entry.value, entry.value.value as Int)
+                                builder.setContentView(contentViewId)
                             }
                         }
                     }
@@ -164,11 +172,16 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment)
                             }
 
                             // set presenter class argument
-                            builder.presenterType(ClassName.bestGuess(getQualifiedTypeName(typeMirror)))
+                            builder.setPresenterType(ClassName.bestGuess(getQualifiedTypeName(typeMirror)))
                         }
                     }
                 }
             }
+        }
+
+        if (!builder.isValid()) {
+            error(annotatedType, "${annotatedType.simpleName} class requires annotation @MvpActivity and @BindMvpPresenter.")
+            return null
         }
 
         val enclosing = annotatedType.enclosingElement
@@ -187,6 +200,7 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment)
      */
     private fun createClassName(simpleViewTypeName: String): String {
         check(!simpleViewTypeName.isBlank()) { "View interface extends from MvpView should be given to @MvpActivityView" }
+        // TODO redesign how to create class name. It should be from annotatedType or something.
 
         val index = simpleViewTypeName.lastIndexOf("View", simpleViewTypeName.length, true)
         val name = if (index != -1) {
@@ -203,11 +217,6 @@ class MvpViewCoordinator(processingEnv: ProcessingEnvironment)
         MvpActivityViewGenerator(filer).run {
             generate(argument)
         }
-    }
-
-    private fun isValidClass(annotationMirror: AnnotationMirror): Boolean {
-
-        return true
     }
 
 

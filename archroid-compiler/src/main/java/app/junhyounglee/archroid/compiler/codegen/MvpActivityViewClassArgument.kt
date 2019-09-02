@@ -9,7 +9,7 @@ class MvpActivityViewClassArgument(
     className: ClassName,
     val viewType: ClassName,
     val presenterType: ClassName,
-    val layoutResId: Id? = null
+    val layoutResId: Id
 ) : ClassArgument(targetTypeName, className) {
 
     override fun getFileName(): String = "MvpSampleActivityView"
@@ -20,17 +20,25 @@ class MvpActivityViewClassArgument(
         private lateinit var className: ClassName
         private lateinit var viewType: ClassName
         private lateinit var presenterType: ClassName
-        private var layoutResId: Id? = null
+        private lateinit var layoutResId: Id
 
-        fun targetTypeName(targetTypeName: TypeName) = apply { this.targetTypeName = targetTypeName }
+        fun setTargetTypeName(targetTypeName: TypeName) = apply { this.targetTypeName = targetTypeName }
 
-        fun className(className: ClassName) = apply { this.className = className }
+        fun setClassName(className: ClassName) = apply { this.className = className }
 
-        fun viewType(viewType: ClassName) = apply { this.viewType = viewType }
+        fun setViewType(viewType: ClassName) = apply { this.viewType = viewType }
 
-        fun presenterType(presenterType: ClassName) = apply { this.presenterType = presenterType }
+        fun setPresenterType(presenterType: ClassName) = apply { this.presenterType = presenterType }
 
-        fun contentView(layoutResId: Id) = apply { this.layoutResId = layoutResId }
+        fun setContentView(layoutResId: Id) = apply { this.layoutResId = layoutResId }
+
+        fun isValid(): Boolean {
+            return this::targetTypeName.isInitialized
+                    && this::className.isInitialized
+                    && this::viewType.isInitialized
+                    && this::presenterType.isInitialized
+                    && this::layoutResId.isInitialized
+        }
 
         fun build() = MvpActivityViewClassArgument(
             targetTypeName,
