@@ -27,6 +27,12 @@ import javax.lang.model.util.Types
 /**
  * ArchCoordinator is an object that parse annotation and create architecture objects such as
  * MvpSampleActivityView, MvpSampleFragmentView.
+ *
+ * @MvpActivityView
+ * @MvpMapActivityView
+ * @MvpFragmentView
+ * @MvpMapFragmentView
+ * @MvpDialogFragmentView
  */
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class ArchCoordinator(
@@ -78,6 +84,32 @@ abstract class ArchCoordinator(
 
     abstract fun onGenerateSourceFile(classArgument: ClassArgument)
 
+    fun warning(message: String, annotation: Element? = null) {
+        processingEnv.warning(message, annotation)
+    }
+
+    fun error(annotation: Element, message: String? = null, exception: Exception? = null) {
+        val stackTrace = exception?.run {
+            StringWriter().apply {
+                this@run.printStackTrace(PrintWriter(this))
+            }
+        }
+
+        val msg = message ?: "Unable to parse ${annotation.simpleName} annotation."
+
+        processingEnv.error(stackTrace?.run { "$msg\n$this" } ?: msg, annotation)
+    }
+
+    fun error(message: String, exception: Exception? = null) {
+        val stackTrace = exception?.run {
+            StringWriter().apply {
+                this@run.printStackTrace(PrintWriter(this))
+            }
+        }
+
+        processingEnv.error(stackTrace?.run { "$message\n$this" } ?: message)
+    }
+
     protected fun getTargetTypeName(annotatedType: TypeElement): TypeName {
         val typeMirror = annotatedType.asType()
 
@@ -89,7 +121,7 @@ abstract class ArchCoordinator(
         return targetType
     }
 
-    protected fun getPackage(annotatedType: TypeElement): PackageElement {
+    fun getPackage(annotatedType: TypeElement): PackageElement {
         return elements.getPackageOf(annotatedType).apply {
             check(!isUnnamed) {"Annotated class should have appropriate package name"}
         }
@@ -149,7 +181,7 @@ abstract class ArchCoordinator(
         return classType.qualifiedName.toString()
     }
 
-    fun getSimpeTypeName(typeMirror: TypeMirror): String {
+    fun getSimpleTypeName(typeMirror: TypeMirror): String {
         val declaredType = typeMirror as DeclaredType
         val classType = declaredType.asElement() as TypeElement
         return classType.simpleName.toString()
@@ -163,38 +195,12 @@ abstract class ArchCoordinator(
         classTypeElement.qualifiedName.toString()
     }
 
-    fun getSimpeTypeName(klass: Class<*>): String = try {
+    fun getSimpleTypeName(klass: Class<*>): String = try {
         klass.simpleName
     } catch (e: MirroredTypeException) {
         val classTypeMirror = e.typeMirror as DeclaredType
         val classTypeElement = classTypeMirror.asElement() as TypeElement
         classTypeElement.simpleName.toString()
-    }
-
-    fun warning(message: String, annotation: Element? = null) {
-        processingEnv.warning(message, annotation)
-    }
-
-    fun error(annotation: Element, message: String? = null, exception: Exception? = null) {
-        val stackTrace = exception?.run {
-            StringWriter().apply {
-                this@run.printStackTrace(PrintWriter(this))
-            }
-        }
-
-        val msg = message ?: "Unable to parse ${annotation.simpleName} annotation."
-
-        processingEnv.error(stackTrace?.run { "$msg\n$this" } ?: msg, annotation)
-    }
-
-    fun error(message: String, exception: Exception? = null) {
-        val stackTrace = exception?.run {
-            StringWriter().apply {
-                this@run.printStackTrace(PrintWriter(this))
-            }
-        }
-
-        processingEnv.error(stackTrace?.run { "$message\n$this" } ?: message)
     }
 
     fun getName(e: Element): String {
@@ -207,6 +213,9 @@ abstract class ArchCoordinator(
         }
     }
 
+    /**
+     * Retrieve android resource id object from the given element and value.
+     */
     protected fun getResourceIdentifier(element: Element, annotationMirror: AnnotationMirror, annotationValue: AnnotationValue, value: Int): Id {
         val tree: JCTree = trees.getTree(element, annotationMirror, annotationValue) as JCTree
         rScanner.reset()

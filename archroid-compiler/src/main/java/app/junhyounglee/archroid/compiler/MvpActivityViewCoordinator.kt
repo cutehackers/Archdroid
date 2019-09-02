@@ -100,7 +100,7 @@ class MvpActivityViewCoordinator(processingEnv: ProcessingEnvironment)
                                 // set view class argument
                                 val viewType = ClassName.bestGuess(getQualifiedTypeName(typeMirror))
                                 builder.setViewType(viewType)
-                                    .setClassName(ClassName(getPackage(annotatedType).qualifiedName.toString(), createClassName(getSimpeTypeName(typeMirror))))
+                                    .setClassName(ClassName(getPackage(annotatedType).qualifiedName.toString(), createClassName(getSimpleTypeName(typeMirror))))
                             }
 
                             // @param layoutResId
