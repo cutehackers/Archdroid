@@ -5,10 +5,10 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import javax.annotation.processing.Filer
 
-class MvpActivityViewGenerator(filer: Filer)
-    : SourceFileGenerator<MvpActivityViewClassArgument>(filer) {
+class MvpFragmentViewGenerator(filer: Filer)
+    : SourceFileGenerator<MvpViewClassArgument>(filer) {
 
-    override fun onGenerate(argument: MvpActivityViewClassArgument): TypeSpec {
+    override fun onGenerate(argument: MvpViewClassArgument): TypeSpec {
         return argument.run {
             val builder = TypeSpec.classBuilder(argument.className.simpleName)
                 .addKdoc(DOCUMENTATION)
@@ -33,7 +33,7 @@ class MvpActivityViewGenerator(filer: Filer)
         }
     }
 
-    private fun getSuperClass(argument: MvpActivityViewClassArgument): ParameterizedTypeName {
+    private fun getSuperClass(argument: MvpViewClassArgument): ParameterizedTypeName {
         return argument.run {
             ClassName(CORE_PACKAGE, LIFECYCLE_CONTROLLER_CLASS).parameterizedBy(viewType, presenterType)
         }
@@ -49,10 +49,9 @@ class MvpActivityViewGenerator(filer: Filer)
     private fun getPropertyContext(): PropertySpec {
         return PropertySpec.builder("context", ClassName(CONTEXT_PACKAGE, CONTEXT_CLASS).copy(nullable = true))
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
-            .getter(FunSpec.getterBuilder().addStatement("return this").build())
+            .getter(FunSpec.getterBuilder().addStatement("return context").build())
             .build()
     }
-
     private fun getPropertyLayoutResId(resourceId: Id): PropertySpec {
         return PropertySpec.builder("layoutResId", Int::class)
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
@@ -77,7 +76,7 @@ class MvpActivityViewGenerator(filer: Filer)
             .build()
     }
 
-    private fun getFunCreateMvpView(argument: MvpActivityViewClassArgument): FunSpec {
+    private fun getFunCreateMvpView(argument: MvpViewClassArgument): FunSpec {
         return FunSpec.builder("onCreateMvpView")
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
             .returns(argument.viewType)
@@ -85,7 +84,7 @@ class MvpActivityViewGenerator(filer: Filer)
             .build()
     }
 
-    private fun getFunOnCreateMvpPresenter(argument: MvpActivityViewClassArgument): FunSpec {
+    private fun getFunOnCreateMvpPresenter(argument: MvpViewClassArgument): FunSpec {
         return FunSpec.builder("onCreateMvpPresenter")
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
             .returns(argument.presenterType)
@@ -96,7 +95,7 @@ class MvpActivityViewGenerator(filer: Filer)
 
     companion object {
         private const val CORE_PACKAGE = "app.junhyounglee.archroid.runtime.core"
-        private const val LIFECYCLE_CONTROLLER_CLASS = "MvpActivityLifecycleController"
+        private const val LIFECYCLE_CONTROLLER_CLASS = "MvpFragmentLifecycleController"
 
         private const val VIEW_PACKAGE = "$CORE_PACKAGE.view"
         private const val VIEW_CLASS = "RootViewImpl"

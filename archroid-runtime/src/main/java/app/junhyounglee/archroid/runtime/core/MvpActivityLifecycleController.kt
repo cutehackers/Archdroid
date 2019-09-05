@@ -3,7 +3,6 @@ package app.junhyounglee.archroid.runtime.core
 import android.os.Bundle
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -28,8 +27,7 @@ import app.junhyounglee.archroid.runtime.core.view.MvpView
  *
  *    private val impl = RootViewImpl()
  *
- *    override val context: Context?
- *      override val context: Context?
+ *    override val context: Context? = this
  *
  *    override val layoutResId: Int
  *      get() = R.layout.users_layout_name
@@ -43,9 +41,9 @@ import app.junhyounglee.archroid.runtime.core.view.MvpView
  *    override val isRootViewAlive: Boolean
  *      get() = impl.isViewAlive
  *
- *    override fun createMvpView(): SampleView = this
+ *    override fun onCreateMvpView(): SampleView = this
  *
- *    override fun onCreatePresenter() = SamplePresenter(this)
+ *    override fun onCreateMvpPresenter() = SamplePresenter(this)
  *  }
  *
  *  Finally, actual MVP activity view  will be like this:
@@ -58,27 +56,31 @@ abstract class MvpActivityLifecycleController<VIEW : MvpView, PRESENTER : MvpPre
     , MvpLifecycleController<VIEW, PRESENTER> {
 
     override val view: VIEW by lazy {
-        createMvpView().also {
+        onCreateMvpView().also {
             // to create presenter instance right after view created
             it.presenter
         }
     }
 
     override val presenter: PRESENTER by lazy {
-        onCreatePresenter()
+        onCreateMvpPresenter()
     }
 
-    override val hostActivity: FragmentActivity
+    override val hostActivity: FragmentActivity?
         get() = this
 
-    override val fragmentManager: FragmentManager
+    override val hostFragmentManager: FragmentManager?
         get() = supportFragmentManager
 
 
+    abstract fun onCreateMvpView(): VIEW
+
+    abstract fun onCreateMvpPresenter(): PRESENTER
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(view.layoutResId)
 
+        setContentView(view.layoutResId)
         onRootViewCreated(window.decorView.findViewById<FrameLayout>(android.R.id.content))
 
         lifecycle.addObserver(presenter)
@@ -89,12 +91,7 @@ abstract class MvpActivityLifecycleController<VIEW : MvpView, PRESENTER : MvpPre
         lifecycle.removeObserver(presenter)
     }
 
-    abstract fun createMvpView(): VIEW
-
-    abstract fun onCreatePresenter(): PRESENTER
-
-    @CallSuper
-    open fun onRootViewCreated(container: ViewGroup) {
+    private fun onRootViewCreated(container: ViewGroup) {
         view.rootView = container
     }
 }

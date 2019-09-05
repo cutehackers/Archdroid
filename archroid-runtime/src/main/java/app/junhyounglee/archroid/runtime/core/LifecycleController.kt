@@ -6,7 +6,7 @@ import androidx.lifecycle.LifecycleOwner
 
 interface LifecycleController : LifecycleOwner {
 
-    val hostActivity: FragmentActivity
+    val hostActivity: FragmentActivity?
 
-    val fragmentManager: FragmentManager
+    val hostFragmentManager: FragmentManager?
 }

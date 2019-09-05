@@ -78,7 +78,7 @@ import kotlinx.android.synthetic.main.activity_sample.view.*
  *
  * }
  */
-@MvpActivityView(SampleView::class, layoutResId = R.layout.activity_sample)
+@MvpActivityView(SampleView::class, R.layout.activity_sample)
 @BindMvpPresenter(SamplePresenter::class)
 class SampleActivityView : MvpSampleActivityView() {
 

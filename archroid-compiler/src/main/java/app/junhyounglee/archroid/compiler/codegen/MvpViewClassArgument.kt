@@ -4,7 +4,7 @@ import app.junhyounglee.archroid.compiler.Id
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.TypeName
 
-class MvpActivityViewClassArgument private constructor(
+class MvpViewClassArgument(
     targetTypeName: TypeName,
     className: ClassName,
     val viewType: ClassName,
@@ -37,7 +37,7 @@ class MvpActivityViewClassArgument private constructor(
                     && this::layoutResId.isInitialized
         }
 
-        fun build() = MvpActivityViewClassArgument(
+        fun build() = MvpViewClassArgument(
             targetTypeName,
             className,
             viewType,
