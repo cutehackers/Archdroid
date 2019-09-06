@@ -46,13 +46,17 @@ abstract class MvpFragmentLifecycleController<VIEW : MvpView, PRESENTER : MvpPre
     ): View? {
         return inflater.inflate(view.layoutResId, container, false).also {
             onRootViewCreated(it as ViewGroup)
-            lifecycle.addObserver(presenter)
+
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         lifecycle.removeObserver(presenter)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        lifecycle.addObserver(presenter)
     }
 
     private fun onRootViewCreated(container: ViewGroup) {

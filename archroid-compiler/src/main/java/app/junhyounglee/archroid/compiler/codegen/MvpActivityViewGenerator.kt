@@ -17,9 +17,9 @@ class MvpActivityViewGenerator(filer: Filer)
                 .superclass(getSuperClass(this))
                 .addSuperinterface(viewType)
                 .addProperty(getPropertyRootImpl())
-                .addProperty(getPropertyContext())
                 .addProperty(getPropertyRootView())
                 .addProperty(getPropertyIsRootViewAlive())
+                .addFunction(getFuncGetContext(argument))
                 .addFunction(getFunCreateMvpView(argument))
                 .addFunction(getFunOnCreateMvpPresenter(argument))
 
@@ -46,13 +46,6 @@ class MvpActivityViewGenerator(filer: Filer)
             .build()
     }
 
-    private fun getPropertyContext(): PropertySpec {
-        return PropertySpec.builder("context", ClassName(CONTEXT_PACKAGE, CONTEXT_CLASS).copy(nullable = true))
-            .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
-            .getter(FunSpec.getterBuilder().addStatement("return this").build())
-            .build()
-    }
-
     private fun getPropertyLayoutResId(resourceId: Id): PropertySpec {
         return PropertySpec.builder("layoutResId", Int::class)
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
@@ -74,6 +67,14 @@ class MvpActivityViewGenerator(filer: Filer)
         return PropertySpec.builder("isRootViewAlive", Boolean::class)
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
             .getter(FunSpec.getterBuilder().addStatement("return impl.isViewAlive").build())
+            .build()
+    }
+
+    private fun getFuncGetContext(argument: MvpActivityViewClassArgument): FunSpec {
+        return FunSpec.builder("getContext")
+            .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
+            .returns(ClassName.bestGuess("android.content.Context").copy(nullable = true))
+            .addStatement("return this")
             .build()
     }
 

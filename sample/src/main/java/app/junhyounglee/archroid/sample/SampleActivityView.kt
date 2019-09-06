@@ -1,9 +1,11 @@
 package app.junhyounglee.archroid.sample
 
+import android.os.Bundle
 import app.junhyounglee.archroid.annotations.BindMvpPresenter
 import app.junhyounglee.archroid.annotations.MvpActivityView
 import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
 import app.junhyounglee.archroid.runtime.core.view.MvpView
+import kotlinx.android.synthetic.main.activity_sample.*
 import kotlinx.android.synthetic.main.activity_sample.view.*
 
 /**
@@ -82,10 +84,22 @@ import kotlinx.android.synthetic.main.activity_sample.view.*
 @BindMvpPresenter(SamplePresenter::class)
 class SampleActivityView : MvpSampleActivityView() {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        profileView.setOnClickListener {
+            hostFragmentManager?.apply {
+                beginTransaction()
+                    .replace(R.id.fragment_container, ProfileFragmentView())
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
+    }
+
     override fun say(message: String) {
         rootView.titleView.text = message
     }
-
 }
 
 interface SampleView : MvpView {

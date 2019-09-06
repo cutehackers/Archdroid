@@ -17,7 +17,6 @@ class MvpFragmentViewGenerator(filer: Filer)
                 .superclass(getSuperClass(this))
                 .addSuperinterface(viewType)
                 .addProperty(getPropertyRootImpl())
-                .addProperty(getPropertyContext())
                 .addProperty(getPropertyRootView())
                 .addProperty(getPropertyIsRootViewAlive())
                 .addFunction(getFunCreateMvpView(argument))
@@ -46,12 +45,6 @@ class MvpFragmentViewGenerator(filer: Filer)
             .build()
     }
 
-    private fun getPropertyContext(): PropertySpec {
-        return PropertySpec.builder("context", ClassName(CONTEXT_PACKAGE, CONTEXT_CLASS).copy(nullable = true))
-            .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
-            .getter(FunSpec.getterBuilder().addStatement("return context").build())
-            .build()
-    }
     private fun getPropertyLayoutResId(resourceId: Id): PropertySpec {
         return PropertySpec.builder("layoutResId", Int::class)
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)

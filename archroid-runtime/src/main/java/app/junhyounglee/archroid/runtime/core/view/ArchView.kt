@@ -9,12 +9,12 @@ import androidx.annotation.LayoutRes
  */
 interface ArchView {
 
-    val context: Context?
-
     @get:LayoutRes
     val layoutResId: Int
 
     var rootView: ViewGroup
 
     val isRootViewAlive: Boolean
+
+    fun getContext(): Context?
 }
