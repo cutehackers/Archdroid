@@ -23,7 +23,7 @@ interface ProfileView : MvpView {
     fun showName(name: String)
 }
 
-class ProfilePresenter(viewaa: ProfileView) : MvpPresenter<ProfileView>(viewaa) {
+class ProfilePresenter(view: ProfileView) : MvpPresenter<ProfileView>(view) {
     override fun onCreate() {
         super.onCreate()
         view.showName("Archroid!!")
