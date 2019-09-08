@@ -7,7 +7,7 @@ import android.view.ViewGroup
  */
 interface RootView {
 
-    var container: ViewGroup
+    var container: ViewGroup?
 
     val isViewAlive: Boolean
 }

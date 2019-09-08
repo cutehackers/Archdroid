@@ -7,8 +7,8 @@ import android.view.ViewGroup
  */
 class RootViewImpl : RootView {
 
-    override lateinit var container: ViewGroup
+    override var container: ViewGroup? = null
 
     override val isViewAlive: Boolean
-        get() = this::container.isInitialized
+        get() = container != null
 }

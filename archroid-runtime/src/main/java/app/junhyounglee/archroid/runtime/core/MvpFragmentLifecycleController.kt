@@ -11,7 +11,7 @@ import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
 import app.junhyounglee.archroid.runtime.core.view.MvpView
 
 /**
- * Abstract base view class that is used to generate fragment extended view using MvpFragmentView
+ * Abstract base class that is used to generate fragment extended view using MvpFragmentView
  * annotation. archroid-compiler will generate following codes for users.
  */
 abstract class MvpFragmentLifecycleController<VIEW : MvpView, PRESENTER : MvpPresenter<VIEW>>
@@ -35,6 +35,7 @@ abstract class MvpFragmentLifecycleController<VIEW : MvpView, PRESENTER : MvpPre
     override val hostFragmentManager: FragmentManager?
         get() = activity?.supportFragmentManager
 
+
     abstract fun onCreateMvpView(): VIEW
 
     abstract fun onCreateMvpPresenter(): PRESENTER
@@ -46,7 +47,6 @@ abstract class MvpFragmentLifecycleController<VIEW : MvpView, PRESENTER : MvpPre
     ): View? {
         return inflater.inflate(view.layoutResId, container, false).also {
             onRootViewCreated(it as ViewGroup)
-
         }
     }
 
