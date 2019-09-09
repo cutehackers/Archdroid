@@ -14,7 +14,7 @@ import javax.lang.model.type.TypeMirror
 
 
 /**
- * @MvpActivityView(SampleView::class)
+ * @MvpActivityView(SampleView::class, R.layout.activity_simple)
  *  Build step
  *  1. is SampleView an interface and a subclass of MvpView? if not error. only an interface can be used.
  *
@@ -43,12 +43,12 @@ class MvpActivityViewCoordinator(processingEnv: ProcessingEnvironment)
 
     /**
      * Parse following annotations:
-     *  @MvpActivityView(SampleView::class)
+     *  @MvpActivityView(SampleView::class, R.layout.activity_simple)
      *  @BindMvpPresenter(SamplePresenter::class)
      *  class SampleActivityView
      *
-     * @return true if MvpActivityView, BindMvpPresenters annotation parsed successfully, otherwise
-     * false
+     * @param annotatedType annotated class type element
+     * @return mvp view argument instance, null otherwise
      */
     private fun parseMvpActivityView(annotatedType: TypeElement): MvpActivityViewClassArgument? {
 

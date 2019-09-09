@@ -5,7 +5,7 @@ import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import javax.annotation.processing.Filer
 
-class MvpFragmentViewGenerator(filer: Filer)
+class MvpDialogFragmentViewGenerator (filer: Filer)
     : SourceFileGenerator<MvpViewClassArgument>(filer) {
 
     override fun onGenerate(argument: MvpViewClassArgument): TypeSpec {
@@ -37,7 +37,6 @@ class MvpFragmentViewGenerator(filer: Filer)
             ClassName(CORE_PACKAGE, LIFECYCLE_CONTROLLER_CLASS).parameterizedBy(viewType, presenterType)
         }
     }
-
     private fun getPropertyRootImpl(): PropertySpec {
         return PropertySpec.builder("impl", ClassName(VIEW_PACKAGE, VIEW_CLASS))
             .addModifiers(KModifier.PRIVATE)
@@ -57,14 +56,15 @@ class MvpFragmentViewGenerator(filer: Filer)
         return PropertySpec.builder("rootView", rootViewType)
             .mutable()
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
-            .getter(FunSpec.getterBuilder()
-                .beginControlFlow("return if (impl.isViewAlive)")
-                .addStatement("impl.container!!")
-                .endControlFlow()
-                .beginControlFlow("else")
-                .addStatement("throw %T(%S)", ClassName.bestGuess("java.lang.NullPointerException"), "Root content view is null!")
-                .endControlFlow()
-                .build())
+            .getter(
+                FunSpec.getterBuilder()
+                    .beginControlFlow("return if (impl.isViewAlive)")
+                    .addStatement("impl.container!!")
+                    .endControlFlow()
+                    .beginControlFlow("else")
+                    .addStatement("throw %T(%S)", ClassName.bestGuess("java.lang.NullPointerException"), "Root content view is null!")
+                    .endControlFlow()
+                    .build())
             .setter(FunSpec.setterBuilder().addParameter("value", rootViewType).addStatement("impl.container = value").build())
             .build()
     }
@@ -95,7 +95,7 @@ class MvpFragmentViewGenerator(filer: Filer)
 
     companion object {
         private const val CORE_PACKAGE = "app.junhyounglee.archroid.runtime.core"
-        private const val LIFECYCLE_CONTROLLER_CLASS = "MvpFragmentLifecycleController"
+        private const val LIFECYCLE_CONTROLLER_CLASS = "MvpDialogFragmentLifecycleController"
 
         private const val VIEW_PACKAGE = "$CORE_PACKAGE.view"
         private const val VIEW_CLASS = "RootViewImpl"

@@ -1,9 +1,9 @@
 package app.junhyounglee.archroid.compiler
 
 import app.junhyounglee.archroid.annotations.BindMvpPresenter
-import app.junhyounglee.archroid.annotations.MvpFragmentView
+import app.junhyounglee.archroid.annotations.MvpDialogFragmentView
 import app.junhyounglee.archroid.compiler.codegen.ClassArgument
-import app.junhyounglee.archroid.compiler.codegen.MvpFragmentViewGenerator
+import app.junhyounglee.archroid.compiler.codegen.MvpDialogFragmentViewGenerator
 import app.junhyounglee.archroid.compiler.codegen.MvpViewClassArgument
 import app.junhyounglee.archroid.compiler.codegen.MvpViewCoordinator
 import com.squareup.kotlinpoet.ClassName
@@ -13,7 +13,7 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 
 /**
- * @MvpFragmentView(SampleView::class, R.layout.fragment_simple)
+ * @MvpDialogFragmentView(SampleView::class, R.layout.dialog_fragment_simple)
  *  Build step
  *  1. is SampleView an interface and a subclass of MvpView? if not error. only an interface can be used.
  *
@@ -25,38 +25,38 @@ import javax.lang.model.element.TypeElement
  *
  *  3. create abstract mvp base class
  *     ex)
- *     abstract class MvpSampleFragmentView
- *          : MvpFragmentLifecycleController<SampleView, SamplePresenter>()
+ *     abstract class MvpSampleDialogFragmentView
+ *          : MvpDialogFragmentLifecycleController<SampleView, SamplePresenter>()
  *          , SampleView {
  *
  */
-class MvpFragmentViewCoordinator(processingEnv: ProcessingEnvironment)
-    : MvpViewCoordinator(processingEnv, MvpFragmentView::class.java) {
+class MvpDialogFragmentCoordinator(processingEnv: ProcessingEnvironment)
+    : MvpViewCoordinator(processingEnv, MvpDialogFragmentView::class.java) {
 
     override fun onRoundProcess(roundEnv: RoundEnvironment, element: Element): ClassArgument? {
         val annotatedType = element as TypeElement
 
-        // parse @MvpFragmentView elements
-        return parseMvpFragmentView(annotatedType)
+        // parse @MvpDialogFragmentView elements
+        return parseMvpDialogFragmentView(annotatedType)
     }
 
     /**
      * Parse following annotations:
-     *  @MvpFragmentView(SampleView::class, R.layout.fragment_sample)
+     *  @MvpDialogFragmentView(SampleView::class, R.layout.dialog_fragment_sample)
      *  @BindMvpPresenter(SamplePresenter::class)
-     *  class SampleFragmentView
+     *  class SampleDialogFragmentView
      *
      * @param annotatedType annotated class type element
      * @return mvp view argument instance, null otherwise
      */
-    private fun parseMvpFragmentView(annotatedType: TypeElement): MvpViewClassArgument? {
+    private fun parseMvpDialogFragmentView(annotatedType: TypeElement): MvpViewClassArgument? {
 
         /*
-         * Step 1. only class can be annotated with @MvpFragmentView
-         *  val elementType: TypeMirror = annotatedType.asType()
-         */
+        * Step 1. only class can be annotated with @MvpDialogFragmentView
+        *  val elementType: TypeMirror = annotatedType.asType()
+        */
         if (!annotatedType.kind.isClass) {
-            error(annotatedType, "Only classes can be annotated with @MvpFragmentView")
+            error(annotatedType, "Only classes can be annotated with @MvpDialogFragmentView")
             return null
         }
 
@@ -66,7 +66,7 @@ class MvpFragmentViewCoordinator(processingEnv: ProcessingEnvironment)
 
         /*
          * Step 2. validate annotations for this class
-         *  1. MvpFragmentView
+         *  1. MvpDialogFragmentView
          *   @param view: interface that extends MvpView
          *  2. BindMvpPresenter
          *   @param presenter: should ba a class extending MvpPresenter that has a view extends
@@ -79,10 +79,10 @@ class MvpFragmentViewCoordinator(processingEnv: ProcessingEnvironment)
 
             when {
                 // MvpFragmentView annotation
-                annotationName.contentEquals(MvpFragmentView::class.simpleName) -> {
+                annotationName.contentEquals(MvpDialogFragmentView::class.simpleName) -> {
                     if (!parseMvpView(annotatedType, builder, annotationMirror)) {
                         // failed to parse annotation argument
-                        return@parseMvpFragmentView null
+                        return@parseMvpDialogFragmentView null
                     }
                 }
 
@@ -90,14 +90,14 @@ class MvpFragmentViewCoordinator(processingEnv: ProcessingEnvironment)
                 annotationName.contentEquals(BindMvpPresenter::class.simpleName) -> {
                     if (!parseMvpPresenter(annotatedType, builder, annotationMirror)) {
                         // failed to parse annotation argument
-                        return@parseMvpFragmentView null
+                        return@parseMvpDialogFragmentView null
                     }
                 }
             }
         }
 
         if (!builder.isValid()) {
-            error(annotatedType, "${annotatedType.simpleName} class requires annotation @MvpFragmentView and @BindMvpPresenter.")
+            error(annotatedType, "${annotatedType.simpleName} class requires annotation @MvpDialogFragmentView and @BindMvpPresenter.")
             return null
         }
 
@@ -106,8 +106,9 @@ class MvpFragmentViewCoordinator(processingEnv: ProcessingEnvironment)
 
     override fun onGenerateSourceFile(classArgument: ClassArgument) {
         val argument = classArgument as MvpViewClassArgument
-        MvpFragmentViewGenerator(filer).run {
+        MvpDialogFragmentViewGenerator(filer).run {
             generate(argument)
         }
     }
+
 }
