@@ -55,17 +55,6 @@ abstract class ArchCoordinator(
         processingEnv.typeUtils
     }
 
-    private lateinit var trees: Trees
-    private val rScanner = RScanner()
-
-    init {
-        try {
-            trees = Trees.instance(processingEnv)
-        } catch (e: IllegalArgumentException) {
-            error("Error while getting tree instance of annotation processing environment", e)
-        }
-    }
-
     fun process(roundEnv: RoundEnvironment) {
         for (element: Element in roundEnv.getElementsAnnotatedWith(klassType)) {
             if (!SuperficialValidation.validateElement(element)) continue
@@ -271,6 +260,9 @@ abstract class ArchCoordinator(
 
     companion object {
 
+        internal lateinit var trees: Trees
+        private val rScanner = RScanner()
+
         internal const val MVP_VIEW_TYPE = "app.junhyounglee.archroid.runtime.core.view.MvpView"
         internal const val MVP_PRESENTER_TYPE = "app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter<VIEW>"
 
@@ -288,5 +280,24 @@ abstract class ArchCoordinator(
 
             return text
         }
+
+        fun init(processingEnv: ProcessingEnvironment) {
+            try {
+                trees = Trees.instance(processingEnv)
+            } catch (ignored: IllegalArgumentException) {
+                try {
+                    // Get original ProcessingEnvironment from Gradle-wrapped one or KAPT-wrapped one.
+                    for (field in processingEnv.javaClass.declaredFields) {
+                        if (field.name == "delegate" || field.name == "processingEnv") {
+                            field.isAccessible = true
+                            val javacEnv = field.get(processingEnv) as ProcessingEnvironment
+                            trees = Trees.instance(javacEnv)
+                            break
+                        }
+                    }
+                } catch (e: Throwable) { }
+            }
+        }
     }
+
 }
