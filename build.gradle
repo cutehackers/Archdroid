@@ -20,7 +20,7 @@ buildscript {
       androidx_appcompat: '1.0.2',
       androidx_card: '1.0.0',
       androidx_recyclerview: '1.0.0',
-      androidx_room: '2.0.0',
+      androidx_room: '2.2.0-rc01',
       material: '1.0.0',
       guava: '27.0.1-android',
       incap : '0.2',
