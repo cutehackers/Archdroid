@@ -6,6 +6,9 @@ import com.google.auto.service.AutoService
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableSet
 import com.google.common.collect.SetMultimap
+import com.sun.source.util.Trees
+import net.ltgt.gradle.incap.IncrementalAnnotationProcessor
+import net.ltgt.gradle.incap.IncrementalAnnotationProcessorType
 import java.io.PrintWriter
 import java.io.StringWriter
 import javax.annotation.processing.*
@@ -24,6 +27,7 @@ import javax.tools.Diagnostic
  *  https://github.com/google/auto/tree/master/service
  */
 @AutoService(Processor::class)
+@IncrementalAnnotationProcessor(IncrementalAnnotationProcessorType.DYNAMIC)
 class ArchroidProcessor : AbstractProcessor() {
 
     private var sdk: Int = 1
@@ -40,10 +44,12 @@ class ArchroidProcessor : AbstractProcessor() {
     }
 
     override fun getSupportedOptions(): MutableSet<String> {
-        return ImmutableSet.of(
-            OPTION_MIN_SDK,
-            OPTION_DEBUGGABLE
-        )
+        return ImmutableSet.builder<String>().run {
+            add(OPTION_MIN_SDK)
+            add(OPTION_DEBUGGABLE)
+            add(IncrementalAnnotationProcessorType.ISOLATING.processorOption)
+            build()
+        }
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> = LinkedHashSet<String>().apply {
@@ -65,6 +71,8 @@ class ArchroidProcessor : AbstractProcessor() {
         messager = processingEnv.messager
         elements = processingEnv.elementUtils
         types = processingEnv.typeUtils
+
+        ArchCoordinator.init(processingEnv)
 
         // initialize compiler options
         setUpOptions(processingEnv)
