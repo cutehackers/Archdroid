@@ -15,6 +15,7 @@
  */
 package com.example.android.architecture.blueprints.todoapp.tasks
 
+import app.junhyounglee.archroid.runtime.core.view.MvpView
 import com.example.android.architecture.blueprints.todoapp.BasePresenter
 import com.example.android.architecture.blueprints.todoapp.BaseView
 import com.example.android.architecture.blueprints.todoapp.data.Task
@@ -22,61 +23,98 @@ import com.example.android.architecture.blueprints.todoapp.data.Task
 /**
  * This specifies the contract between the view and the presenter.
  */
-interface TasksContract {
+//interface TasksContract {
+//
+//    interface View : BaseView<Presenter> {
+//
+//        var isActive: Boolean
+//
+//        fun setLoadingIndicator(active: Boolean)
+//
+//        fun showTasks(tasks: List<Task>)
+//
+//        fun showAddTask()
+//
+//        fun showTaskDetailsUi(taskId: String)
+//
+//        fun showTaskMarkedComplete()
+//
+//        fun showTaskMarkedActive()
+//
+//        fun showCompletedTasksCleared()
+//
+//        fun showLoadingTasksError()
+//
+//        fun showNoTasks()
+//
+//        fun showActiveFilterLabel()
+//
+//        fun showCompletedFilterLabel()
+//
+//        fun showAllFilterLabel()
+//
+//        fun showNoActiveTasks()
+//
+//        fun showNoCompletedTasks()
+//
+//        fun showSuccessfullySavedMessage()
+//
+//        fun showFilteringPopUpMenu()
+//    }
+//
+//    interface Presenter : BasePresenter {
+//
+//        var currentFiltering: TasksFilterType
+//
+//        fun result(requestCode: Int, resultCode: Int)
+//
+//        fun loadTasks(forceUpdate: Boolean)
+//
+//        fun addNewTask()
+//
+//        fun openTaskDetails(requestedTask: Task)
+//
+//        fun completeTask(completedTask: Task)
+//
+//        fun activateTask(activeTask: Task)
+//
+//        fun clearCompletedTasks()
+//    }
+//}
 
-    interface View : BaseView<Presenter> {
+interface TasksView : MvpView {
 
-        var isActive: Boolean
+    var isActive: Boolean
 
-        fun setLoadingIndicator(active: Boolean)
+    fun setLoadingIndicator(active: Boolean)
 
-        fun showTasks(tasks: List<Task>)
+    fun showTasks(tasks: List<Task>)
 
-        fun showAddTask()
+    fun showAddTask()
 
-        fun showTaskDetailsUi(taskId: String)
+    fun showTaskDetailsUi(taskId: String)
 
-        fun showTaskMarkedComplete()
+    fun showTaskMarkedComplete()
 
-        fun showTaskMarkedActive()
+    fun showTaskMarkedActive()
 
-        fun showCompletedTasksCleared()
+    fun showCompletedTasksCleared()
 
-        fun showLoadingTasksError()
+    fun showLoadingTasksError()
 
-        fun showNoTasks()
+    fun showNoTasks()
 
-        fun showActiveFilterLabel()
+    fun showActiveFilterLabel()
 
-        fun showCompletedFilterLabel()
+    fun showCompletedFilterLabel()
 
-        fun showAllFilterLabel()
+    fun showAllFilterLabel()
 
-        fun showNoActiveTasks()
+    fun showNoActiveTasks()
 
-        fun showNoCompletedTasks()
+    fun showNoCompletedTasks()
 
-        fun showSuccessfullySavedMessage()
+    fun showSuccessfullySavedMessage()
 
-        fun showFilteringPopUpMenu()
-    }
-
-    interface Presenter : BasePresenter {
-
-        var currentFiltering: TasksFilterType
-
-        fun result(requestCode: Int, resultCode: Int)
-
-        fun loadTasks(forceUpdate: Boolean)
-
-        fun addNewTask()
-
-        fun openTaskDetails(requestedTask: Task)
-
-        fun completeTask(completedTask: Task)
-
-        fun activateTask(activeTask: Task)
-
-        fun clearCompletedTasks()
-    }
+    fun showFilteringPopUpMenu()
 }

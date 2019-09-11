@@ -23,7 +23,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.test.espresso.IdlingResource
-import com.example.android.architecture.blueprints.todoapp.Injection
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsActivity
 import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingResource
@@ -33,11 +32,7 @@ import com.google.android.material.navigation.NavigationView
 
 class TasksActivity : AppCompatActivity() {
 
-    private val CURRENT_FILTERING_KEY = "CURRENT_FILTERING_KEY"
-
     private lateinit var drawerLayout: DrawerLayout
-
-    private lateinit var tasksPresenter: TasksPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,27 +50,10 @@ class TasksActivity : AppCompatActivity() {
         }
         setupDrawerContent(findViewById(R.id.nav_view))
 
-        val tasksFragment = supportFragmentManager.findFragmentById(R.id.contentFrame)
-                as TasksFragment? ?: TasksFragment.newInstance().also {
-            replaceFragmentInActivity(it, R.id.contentFrame)
-        }
-
-        // Create the presenter
-        tasksPresenter = TasksPresenter(
-            Injection.provideTasksRepository(applicationContext),
-                tasksFragment).apply {
-            // Load previously saved state, if available.
-            if (savedInstanceState != null) {
-                currentFiltering = savedInstanceState.getSerializable(CURRENT_FILTERING_KEY)
-                        as TasksFilterType
-            }
-        }
-    }
-
-    public override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState.apply {
-            putSerializable(CURRENT_FILTERING_KEY, tasksPresenter.currentFiltering)
-        })
+//        supportFragmentManager.findFragmentById(R.id.contentFrame) as TasksFragment?
+//            ?: TasksFragment.newInstance().also {
+//                replaceFragmentInActivity(it, R.id.contentFrame)
+//            }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
