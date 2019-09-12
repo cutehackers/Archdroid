@@ -37,7 +37,8 @@ import javax.lang.model.util.Types
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class ArchCoordinator(
     protected val processingEnv: ProcessingEnvironment,
-    protected val klassType: Class<out Annotation>) {
+    internal val klassType: Class<out Annotation>
+) {
 
     protected val filer: Filer by lazy {
         processingEnv.filer

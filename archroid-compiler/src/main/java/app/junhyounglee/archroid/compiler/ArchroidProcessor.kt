@@ -6,7 +6,6 @@ import com.google.auto.service.AutoService
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableSet
 import com.google.common.collect.SetMultimap
-import com.sun.source.util.Trees
 import net.ltgt.gradle.incap.IncrementalAnnotationProcessor
 import net.ltgt.gradle.incap.IncrementalAnnotationProcessorType
 import java.io.PrintWriter
@@ -60,7 +59,9 @@ class ArchroidProcessor : AbstractProcessor() {
 
     private fun getSupportedAnnotations(): Set<Class<out Annotation>> {
         return LinkedHashSet<Class<out Annotation>>().apply {
-            add(MvpActivityView::class.java)
+            coordinators.forEach {
+                add(it.klassType)
+            }
         }
     }
 
