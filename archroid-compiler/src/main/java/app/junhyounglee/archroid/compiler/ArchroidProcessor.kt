@@ -1,6 +1,8 @@
 package app.junhyounglee.archroid.compiler
 
 import app.junhyounglee.archroid.annotations.MvpActivityView
+import app.junhyounglee.archroid.annotations.MvpDialogFragmentView
+import app.junhyounglee.archroid.annotations.MvpFragmentView
 import com.google.auto.common.BasicAnnotationProcessor
 import com.google.auto.service.AutoService
 import com.google.common.collect.ImmutableList
@@ -60,7 +62,9 @@ class ArchroidProcessor : AbstractProcessor() {
 
     private fun getSupportedAnnotations(): Set<Class<out Annotation>> {
         return LinkedHashSet<Class<out Annotation>>().apply {
-            add(MvpActivityView::class.java)
+            coordinators.forEach {
+                add(it.klassType)
+            }
         }
     }
 
