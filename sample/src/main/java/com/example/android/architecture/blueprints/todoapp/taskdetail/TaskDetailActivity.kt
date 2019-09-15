@@ -41,14 +41,10 @@ class TaskDetailActivity : AppCompatActivity() {
         // Get the requested task id
         val taskId = intent.getStringExtra(EXTRA_TASK_ID)
 
-        val taskDetailFragment = supportFragmentManager
-                .findFragmentById(R.id.contentFrame) as TaskDetailFragment? ?:
-                TaskDetailFragment.newInstance(taskId).also {
-                    replaceFragmentInActivity(it, R.id.contentFrame)
-                }
-        // Create the presenter
-        TaskDetailPresenter(taskId, Injection.provideTasksRepository(applicationContext),
-                taskDetailFragment)
+        supportFragmentManager.findFragmentById(R.id.contentFrame) as TaskDetailFragment?
+            ?: TaskDetailFragment.newInstance(taskId).also {
+                replaceFragmentInActivity(it, R.id.contentFrame)
+            }
     }
 
     override fun onSupportNavigateUp(): Boolean {

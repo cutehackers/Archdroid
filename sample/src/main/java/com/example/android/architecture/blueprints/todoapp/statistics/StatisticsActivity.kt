@@ -53,14 +53,10 @@ class StatisticsActivity : AppCompatActivity() {
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
         setupDrawerContent(navigationView)
 
-        val statisticsFragment = supportFragmentManager
-                .findFragmentById(R.id.contentFrame) as StatisticsFragment?
-                ?: StatisticsFragment.newInstance().also {
-            replaceFragmentInActivity(it, R.id.contentFrame)
-        }
-
-        StatisticsPresenter(
-                Injection.provideTasksRepository(applicationContext), statisticsFragment)
+        supportFragmentManager.findFragmentById(R.id.contentFrame) as StatisticsFragment?
+            ?: StatisticsFragment.newInstance().also {
+                replaceFragmentInActivity(it, R.id.contentFrame)
+            }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

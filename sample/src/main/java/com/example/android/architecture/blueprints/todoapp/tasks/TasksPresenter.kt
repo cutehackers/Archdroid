@@ -29,8 +29,7 @@ import java.util.ArrayList
  * Listens to user actions from the UI ([TasksFragment]), retrieves the data and updates the
  * UI as required.
  */
-class TasksPresenter(tasksView: TasksView)
-    : MvpPresenter<TasksView>(tasksView) {
+class TasksPresenter(tasksView: TasksView) : MvpPresenter<TasksView>(tasksView) {
 
     private lateinit var tasksRepository: TasksRepository
     var currentFiltering = TasksFilterType.ALL_TASKS
@@ -40,7 +39,7 @@ class TasksPresenter(tasksView: TasksView)
     override fun onCreate() {
         super.onCreate()
 
-        // Create the presenter
+        // Create the repository
         view.getContext()?.apply {
             tasksRepository = Injection.provideTasksRepository(applicationContext)
         }

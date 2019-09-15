@@ -50,10 +50,10 @@ class TasksActivity : AppCompatActivity() {
         }
         setupDrawerContent(findViewById(R.id.nav_view))
 
-//        supportFragmentManager.findFragmentById(R.id.contentFrame) as TasksFragment?
-//            ?: TasksFragment.newInstance().also {
-//                replaceFragmentInActivity(it, R.id.contentFrame)
-//            }
+        supportFragmentManager.findFragmentById(R.id.contentFrame) as TasksFragment?
+            ?: TasksFragment.newInstance().also {
+                replaceFragmentInActivity(it, R.id.contentFrame)
+            }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

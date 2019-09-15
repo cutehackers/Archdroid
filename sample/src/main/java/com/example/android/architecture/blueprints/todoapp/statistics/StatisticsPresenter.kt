@@ -16,6 +16,8 @@
 package com.example.android.architecture.blueprints.todoapp.statistics
 
 
+import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
+import com.example.android.architecture.blueprints.todoapp.Injection
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
@@ -26,20 +28,23 @@ import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingRe
  * the UI as required.
  */
 class StatisticsPresenter(
-        val tasksRepository: TasksRepository,
-        val statisticsView: StatisticsContract.View
-) : StatisticsContract.Presenter {
+    statisticsView: StatisticsView
+) : MvpPresenter<StatisticsView>(statisticsView) {
 
-    init {
-        statisticsView.presenter = this
+    private lateinit var tasksRepository: TasksRepository
+
+    override fun onCreate() {
+        view.getContext()?.apply {
+            Injection.provideTasksRepository(applicationContext)
+        }
     }
 
-    override fun start() {
+    fun start() {
         loadStatistics()
     }
 
     private fun loadStatistics() {
-        statisticsView.setProgressIndicator(true)
+        view.setProgressIndicator(true)
 
         // The network request might be handled in a different thread so make sure Espresso knows
         // that the app is busy until the response is handled.
@@ -58,19 +63,19 @@ class StatisticsPresenter(
                     EspressoIdlingResource.decrement() // Set app as idle.
                 }
                 // The view may not be able to handle UI updates anymore
-                if (!statisticsView.isActive) {
+                if (!view.isActive) {
                     return
                 }
-                statisticsView.setProgressIndicator(false)
-                statisticsView.showStatistics(activeTasks, completedTasks)
+                view.setProgressIndicator(false)
+                view.showStatistics(activeTasks, completedTasks)
             }
 
             override fun onDataNotAvailable() {
                 // The view may not be able to handle UI updates anymore
-                if (!statisticsView.isActive) {
+                if (!view.isActive) {
                     return
                 }
-                statisticsView.showLoadingStatisticsError()
+                view.showLoadingStatisticsError()
             }
         })
     }

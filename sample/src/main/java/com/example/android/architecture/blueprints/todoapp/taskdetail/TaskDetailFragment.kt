@@ -18,49 +18,45 @@ package com.example.android.architecture.blueprints.todoapp.taskdetail
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.CheckBox
 import android.widget.TextView
+import app.junhyounglee.archroid.annotations.BindMvpPresenter
+import app.junhyounglee.archroid.annotations.MvpFragmentView
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskActivity
 import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskFragment
 import com.example.android.architecture.blueprints.todoapp.util.showSnackBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 
 /**
  * Main UI for the task detail screen.
  */
-class TaskDetailFragment : Fragment(), TaskDetailContract.View {
+@MvpFragmentView(TaskDetailView::class, R.layout.taskdetail_frag)
+@BindMvpPresenter(TaskDetailPresenter::class)
+class TaskDetailFragment : MvpTaskDetailFragment() {
 
     private lateinit var detailTitle: TextView
     private lateinit var detailDescription: TextView
     private lateinit var detailCompleteStatus: CheckBox
-    
-    override lateinit var presenter: TaskDetailContract.Presenter
+
+    override val taskId: String by lazy {
+        arguments!!.getString(ARGUMENT_TASK_ID)
+    }
 
     override var isActive: Boolean = false
         get() = isAdded
 
-    override fun onResume() {
-        super.onResume()
-        presenter.start()
-    }
-
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
-        val root = inflater.inflate(R.layout.taskdetail_frag, container, false)
+        val root: View = super.onCreateView(inflater, container, savedInstanceState) as View
+
         setHasOptionsMenu(true)
-        with(root) {
+        root.apply {
             detailTitle = findViewById(R.id.task_detail_title)
             detailDescription = findViewById(R.id.task_detail_description)
             detailCompleteStatus = findViewById(R.id.task_detail_complete)
@@ -130,11 +126,11 @@ class TaskDetailFragment : Fragment(), TaskDetailContract.View {
     }
 
     override fun showTaskMarkedComplete() {
-        view?.showSnackBar(getString(R.string.task_marked_complete), Snackbar.LENGTH_LONG)
+        rootView.showSnackBar(getString(R.string.task_marked_complete), Snackbar.LENGTH_LONG)
     }
 
     override fun showTaskMarkedActive() {
-        view?.showSnackBar(getString(R.string.task_marked_active), Snackbar.LENGTH_LONG)
+        rootView.showSnackBar(getString(R.string.task_marked_active), Snackbar.LENGTH_LONG)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -160,14 +156,18 @@ class TaskDetailFragment : Fragment(), TaskDetailContract.View {
 
     companion object {
 
-        private val ARGUMENT_TASK_ID = "TASK_ID"
+        private const val ARGUMENT_TASK_ID = "TASK_ID"
 
-        private val REQUEST_EDIT_TASK = 1
+        private const val REQUEST_EDIT_TASK = 1
 
-        fun newInstance(taskId: String?) =
-                TaskDetailFragment().apply {
-                    arguments = Bundle().apply { putString(ARGUMENT_TASK_ID, taskId) }
-                }
+        fun newInstance(taskId: String) =
+            TaskDetailFragment().apply {
+                arguments = prepareArgs(taskId)
+            }
+
+        private fun prepareArgs(taskId: String) = Bundle().apply {
+            putString(ARGUMENT_TASK_ID, taskId)
+        }
     }
 
 }

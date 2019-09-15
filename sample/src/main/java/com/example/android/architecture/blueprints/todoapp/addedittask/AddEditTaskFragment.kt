@@ -23,6 +23,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import app.junhyounglee.archroid.annotations.BindMvpPresenter
+import app.junhyounglee.archroid.annotations.MvpFragmentView
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.util.showSnackBar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -31,9 +33,14 @@ import com.google.android.material.snackbar.Snackbar
 /**
  * Main UI for the add task screen. Users can enter a task title and description.
  */
-class AddEditTaskFragment : Fragment(), AddEditTaskContract.View {
+@MvpFragmentView(AddEditTaskView::class, R.layout.addtask_frag)
+@BindMvpPresenter(AddEditTaskPresenter::class)
+class AddEditTaskFragment : MvpAddEditTaskFragment() {
 
-    override lateinit var presenter: AddEditTaskContract.Presenter
+    override val taskId: String? = null
+
+    override var isDataMissing: Boolean = true
+
     override var isActive = false
         get() = isAdded
 
@@ -56,15 +63,29 @@ class AddEditTaskFragment : Fragment(), AddEditTaskContract.View {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?): View? {
-        val root = inflater.inflate(R.layout.addtask_frag, container, false)
-        with(root) {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val root: View = super.onCreateView(inflater, container, savedInstanceState) as View
+        root.apply {
             title = findViewById(R.id.add_task_title)
             description = findViewById(R.id.add_task_description)
         }
         setHasOptionsMenu(true)
+
+        // Prevent the presenter from loading data from the repository if this is a config change.
+        // Data might not have loaded when the config change happen, so we saved the state.
+        isDataMissing = savedInstanceState?.getBoolean(SHOULD_LOAD_DATA_FROM_REPO_KEY) ?: true
+
         return root
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState.apply {
+            putBoolean(SHOULD_LOAD_DATA_FROM_REPO_KEY, isDataMissing)
+        })
     }
 
     override fun showEmptyTaskError() {
@@ -87,13 +108,15 @@ class AddEditTaskFragment : Fragment(), AddEditTaskContract.View {
     }
 
     companion object {
+        const val SHOULD_LOAD_DATA_FROM_REPO_KEY = "SHOULD_LOAD_DATA_FROM_REPO_KEY"
+
         const val ARGUMENT_EDIT_TASK_ID = "EDIT_TASK_ID"
 
         fun newInstance(taskId: String?) =
-                AddEditTaskFragment().apply {
-                    arguments = Bundle().apply {
-                        putString(AddEditTaskFragment.ARGUMENT_EDIT_TASK_ID, taskId)
-                    }
+            AddEditTaskFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARGUMENT_EDIT_TASK_ID, taskId)
                 }
+            }
     }
 }

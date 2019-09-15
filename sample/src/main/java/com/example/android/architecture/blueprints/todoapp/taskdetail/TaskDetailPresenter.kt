@@ -15,6 +15,8 @@
  */
 package com.example.android.architecture.blueprints.todoapp.taskdetail
 
+import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
+import com.example.android.architecture.blueprints.todoapp.Injection
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
@@ -23,30 +25,36 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepo
  * Listens to user actions from the UI ([TaskDetailFragment]), retrieves the data and updates
  * the UI as required.
  */
-class TaskDetailPresenter(
-        private val taskId: String,
-        private val tasksRepository: TasksRepository,
-        private val taskDetailView: TaskDetailContract.View
-) : TaskDetailContract.Presenter {
+class TaskDetailPresenter(detailView: TaskDetailView) : MvpPresenter<TaskDetailView>(detailView) {
 
-    init {
-        taskDetailView.presenter = this
+    private lateinit var tasksRepository: TasksRepository
+
+    override fun onCreate() {
+        // Create the repository
+        view.getContext()?.apply {
+            tasksRepository = Injection.provideTasksRepository(applicationContext)
+        }
     }
 
-    override fun start() {
+    override fun onResume() {
+        super.onResume()
+        start()
+    }
+
+    fun start() {
         openTask()
     }
 
     private fun openTask() {
-        if (taskId.isEmpty()) {
-            taskDetailView.showMissingTask()
+        if (view.taskId.isEmpty()) {
+            view.showMissingTask()
             return
         }
 
-        taskDetailView.setLoadingIndicator(true)
-        tasksRepository.getTask(taskId, object : TasksDataSource.GetTaskCallback {
+        view.setLoadingIndicator(true)
+        tasksRepository.getTask(view.taskId, object : TasksDataSource.GetTaskCallback {
             override fun onTaskLoaded(task: Task) {
-                with(taskDetailView) {
+                with(view) {
                     // The view may not be able to handle UI updates anymore
                     if (!isActive) {
                         return@onTaskLoaded
@@ -57,7 +65,7 @@ class TaskDetailPresenter(
             }
 
             override fun onDataNotAvailable() {
-                with(taskDetailView) {
+                with(view) {
                     // The view may not be able to handle UI updates anymore
                     if (!isActive) {
                         return@onDataNotAvailable
@@ -68,43 +76,43 @@ class TaskDetailPresenter(
         })
     }
 
-    override fun editTask() {
-        if (taskId.isEmpty()) {
-            taskDetailView.showMissingTask()
+    fun editTask() {
+        if (view.taskId.isEmpty()) {
+            view.showMissingTask()
             return
         }
-        taskDetailView.showEditTask(taskId)
+        view.showEditTask(view.taskId)
     }
 
-    override fun deleteTask() {
-        if (taskId.isEmpty()) {
-            taskDetailView.showMissingTask()
+    fun deleteTask() {
+        if (view.taskId.isEmpty()) {
+            view.showMissingTask()
             return
         }
-        tasksRepository.deleteTask(taskId)
-        taskDetailView.showTaskDeleted()
+        tasksRepository.deleteTask(view.taskId)
+        view.showTaskDeleted()
     }
 
-    override fun completeTask() {
-        if (taskId.isEmpty()) {
-            taskDetailView.showMissingTask()
+    fun completeTask() {
+        if (view.taskId.isEmpty()) {
+            view.showMissingTask()
             return
         }
-        tasksRepository.completeTask(taskId)
-        taskDetailView.showTaskMarkedComplete()
+        tasksRepository.completeTask(view.taskId)
+        view.showTaskMarkedComplete()
     }
 
-    override fun activateTask() {
-        if (taskId.isEmpty()) {
-            taskDetailView.showMissingTask()
+    fun activateTask() {
+        if (view.taskId.isEmpty()) {
+            view.showMissingTask()
             return
         }
-        tasksRepository.activateTask(taskId)
-        taskDetailView.showTaskMarkedActive()
+        tasksRepository.activateTask(view.taskId)
+        view.showTaskMarkedActive()
     }
 
     private fun showTask(task: Task) {
-        with(taskDetailView) {
+        with(view) {
             if (taskId.isEmpty()) {
                 hideTitle()
                 hideDescription()

@@ -20,25 +20,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.fragment.app.Fragment
+import app.junhyounglee.archroid.annotations.BindMvpPresenter
+import app.junhyounglee.archroid.annotations.MvpFragmentView
 import com.example.android.architecture.blueprints.todoapp.R
 
 /**
  * Main UI for the statistics screen.
  */
-class StatisticsFragment : Fragment(), StatisticsContract.View {
+@MvpFragmentView(StatisticsView::class, R.layout.statistics_frag)
+@BindMvpPresenter(StatisticsPresenter::class)
+class StatisticsFragment : MvpStatisticsFragment() {
 
     private lateinit var statisticsTV: TextView
-
-    override lateinit var presenter: StatisticsContract.Presenter
 
     override val isActive: Boolean
         get() = isAdded
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?): View? {
-        val root = inflater.inflate(R.layout.statistics_frag, container, false)
-        statisticsTV = root.findViewById(R.id.statistics)
+        val root: View = super.onCreateView(inflater, container, savedInstanceState) as View
+        root.apply {
+            statisticsTV = findViewById(R.id.statistics)
+        }
         return root
     }
 

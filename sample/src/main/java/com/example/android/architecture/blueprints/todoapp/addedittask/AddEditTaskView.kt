@@ -13,10 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.architecture.blueprints.todoapp
 
-interface BaseView<T> {
+package com.example.android.architecture.blueprints.todoapp.addedittask
 
-    var presenter: T
+import app.junhyounglee.archroid.runtime.core.view.MvpView
 
+/**
+ * This specifies the contract between the view and the presenter.
+ */
+interface AddEditTaskView : MvpView {
+    val taskId: String?
+
+    var isDataMissing: Boolean
+
+    var isActive: Boolean
+
+    fun showEmptyTaskError()
+
+    fun showTasksList()
+
+    fun setTitle(title: String)
+
+    fun setDescription(description: String)
 }

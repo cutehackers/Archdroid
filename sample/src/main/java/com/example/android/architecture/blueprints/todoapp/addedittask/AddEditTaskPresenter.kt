@@ -16,6 +16,8 @@
 
 package com.example.android.architecture.blueprints.todoapp.addedittask
 
+import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
+import com.example.android.architecture.blueprints.todoapp.Injection
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
 
@@ -31,68 +33,67 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
  * @param isDataMissing whether data needs to be loaded or not (for config changes)
  */
 class AddEditTaskPresenter(
-        private val taskId: String?,
-        val tasksRepository: TasksDataSource,
-        val addTaskView: AddEditTaskContract.View,
-        override var isDataMissing: Boolean
-) : AddEditTaskContract.Presenter, TasksDataSource.GetTaskCallback {
+    addTaskView: AddEditTaskView
+) : MvpPresenter<AddEditTaskView>(addTaskView), TasksDataSource.GetTaskCallback {
 
-    init {
-        addTaskView.presenter = this
+    private lateinit var tasksRepository: TasksDataSource
+
+    override fun onCreate() {
+        view.getContext()?.apply {
+            tasksRepository = Injection.provideTasksRepository(applicationContext)
+        }
     }
 
-    override fun start() {
-        if (taskId != null && isDataMissing) {
+    override fun onTaskLoaded(task: Task) {
+        // The view may not be able to handle UI updates anymore
+        if (view.isActive) {
+            view.setTitle(task.title)
+            view.setDescription(task.description)
+        }
+        view.isDataMissing = false
+    }
+
+    override fun onDataNotAvailable() {
+        // The view may not be able to handle UI updates anymore
+        if (view.isActive) {
+            view.showEmptyTaskError()
+        }
+    }
+
+    fun start() {
+        if (view.taskId != null && view.isDataMissing) {
             populateTask()
         }
     }
 
-    override fun saveTask(title: String, description: String) {
-        if (taskId == null) {
+    fun saveTask(title: String, description: String) {
+        if (view.taskId == null) {
             createTask(title, description)
         } else {
             updateTask(title, description)
         }
     }
 
-    override fun populateTask() {
-        if (taskId == null) {
-            throw RuntimeException("populateTask() was called but task is new.")
-        }
-        tasksRepository.getTask(taskId, this)
-    }
-
-    override fun onTaskLoaded(task: Task) {
-        // The view may not be able to handle UI updates anymore
-        if (addTaskView.isActive) {
-            addTaskView.setTitle(task.title)
-            addTaskView.setDescription(task.description)
-        }
-        isDataMissing = false
-    }
-
-    override fun onDataNotAvailable() {
-        // The view may not be able to handle UI updates anymore
-        if (addTaskView.isActive) {
-            addTaskView.showEmptyTaskError()
-        }
+    fun populateTask() {
+        view.taskId?.apply {
+            tasksRepository.getTask(this, this@AddEditTaskPresenter)
+        } ?: throw RuntimeException("populateTask() was called but task is new.")
     }
 
     private fun createTask(title: String, description: String) {
         val newTask = Task(title, description)
         if (newTask.isEmpty) {
-            addTaskView.showEmptyTaskError()
+            view.showEmptyTaskError()
         } else {
             tasksRepository.saveTask(newTask)
-            addTaskView.showTasksList()
+            view.showTasksList()
         }
     }
 
     private fun updateTask(title: String, description: String) {
-        if (taskId == null) {
-            throw RuntimeException("updateTask() was called but task is new.")
-        }
-        tasksRepository.saveTask(Task(title, description, taskId))
-        addTaskView.showTasksList() // After an edit, go back to the list.
+        view.taskId?.apply {
+            tasksRepository.saveTask(Task(title, description, this))
+            view.showTasksList() // After an edit, go back to the list.
+        } ?: throw RuntimeException("updateTask() was called but task is new.")
     }
 }
