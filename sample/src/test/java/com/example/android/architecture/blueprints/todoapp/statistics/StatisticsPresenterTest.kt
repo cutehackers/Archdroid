@@ -35,7 +35,7 @@ import org.mockito.MockitoAnnotations
 class StatisticsPresenterTest {
 
     @Mock private lateinit var tasksRepository: TasksRepository
-    @Mock private lateinit var statisticsView: StatisticsContract.View
+    @Mock private lateinit var statisticsView: StatisticsView
     /**
      * [ArgumentCaptor] is a powerful Mockito API to capture argument values and use them to
      * perform further actions or assertions on them.
@@ -51,23 +51,16 @@ class StatisticsPresenterTest {
         MockitoAnnotations.initMocks(this)
 
         // Get a reference to the class under test
-        statisticsPresenter = StatisticsPresenter(tasksRepository, statisticsView)
+        statisticsPresenter = StatisticsPresenter(statisticsView)
 
         // The presenter won't update the view unless it's active.
         `when`(statisticsView.isActive).thenReturn(true)
+        `when`(statisticsView.presenter).thenReturn(statisticsPresenter)
 
         // We start the tasks to 3, with one active and two completed
         tasks = Lists.newArrayList(Task("Title1", "Description1"),
                 Task("Title2", "Description2").apply { isCompleted = true },
                 Task("Title3", "Description3").apply { isCompleted = true })
-    }
-
-    @Test fun createPresenter_setsThePresenterToView() {
-        // Get a reference to the class under test
-        statisticsPresenter = StatisticsPresenter(tasksRepository, statisticsView)
-
-        // Then the presenter is set to the view
-        verify(statisticsView).presenter = statisticsPresenter
     }
 
     @Test fun loadEmptyTasksFromRepository_CallViewToDisplay() {

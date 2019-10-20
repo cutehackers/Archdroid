@@ -17,13 +17,9 @@
 package com.example.android.architecture.blueprints.todoapp.addedittask
 
 import com.example.android.architecture.blueprints.todoapp.any
-import com.example.android.architecture.blueprints.todoapp.capture
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
-import com.example.android.architecture.blueprints.todoapp.eq
-import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.ArgumentCaptor
@@ -38,15 +34,17 @@ import org.mockito.MockitoAnnotations
  */
 class AddEditTaskPresenterTest {
 
-    @Mock private lateinit var tasksRepository: TasksRepository
+    @Mock
+    private lateinit var tasksRepository: TasksRepository
 
-    @Mock private lateinit var addEditTaskView: AddEditTaskContract.View
+    @Mock private lateinit var addEditTaskView: AddEditTaskView
 
     /**
      * [ArgumentCaptor] is a powerful Mockito API to capture argument values and use them to
      * perform further actions or assertions on them.
      */
-    @Captor private lateinit var getTaskCallbackCaptor: ArgumentCaptor<TasksDataSource.GetTaskCallback>
+    @Captor
+    private lateinit var getTaskCallbackCaptor: ArgumentCaptor<TasksDataSource.GetTaskCallback>
 
     private lateinit var addEditTaskPresenter: AddEditTaskPresenter
 
@@ -61,16 +59,15 @@ class AddEditTaskPresenterTest {
 
     @Test fun createPresenter_setsThePresenterToView() {
         // Get a reference to the class under test
-        addEditTaskPresenter = AddEditTaskPresenter(
-                null, tasksRepository, addEditTaskView, true)
+        addEditTaskPresenter = AddEditTaskPresenter(addEditTaskView)
 
         // Then the presenter is set to the view
-        verify(addEditTaskView).presenter = addEditTaskPresenter
+        //verify(addEditTaskView).presenter = addEditTaskPresenter
     }
 
     @Test fun saveNewTaskToRepository_showsSuccessMessageUi() {
         // Get a reference to the class under test
-        addEditTaskPresenter = AddEditTaskPresenter(null, tasksRepository, addEditTaskView, true)
+        addEditTaskPresenter = AddEditTaskPresenter(addEditTaskView)
 
         // When the presenter is asked to save a task
         addEditTaskPresenter.saveTask("New Task Title", "Some Task Description")
@@ -82,7 +79,7 @@ class AddEditTaskPresenterTest {
 
     @Test fun saveTask_emptyTaskShowsErrorUi() {
         // Get a reference to the class under test
-        addEditTaskPresenter = AddEditTaskPresenter(null, tasksRepository, addEditTaskView, true)
+        addEditTaskPresenter = AddEditTaskPresenter(addEditTaskView)
 
         // When the presenter is asked to save an empty task
         addEditTaskPresenter.saveTask("", "")
@@ -93,8 +90,7 @@ class AddEditTaskPresenterTest {
 
     @Test fun saveExistingTaskToRepository_showsSuccessMessageUi() {
         // Get a reference to the class under test
-        addEditTaskPresenter = AddEditTaskPresenter(
-                "1", tasksRepository, addEditTaskView, true)
+        addEditTaskPresenter = AddEditTaskPresenter(addEditTaskView)
 
         // When the presenter is asked to save an existing task
         addEditTaskPresenter.saveTask("Existing Task Title", "Some Task Description")
@@ -102,26 +98,5 @@ class AddEditTaskPresenterTest {
         // Then a task is saved in the repository and the view updated
         verify(tasksRepository).saveTask(any<Task>()) // saved to the model
         verify(addEditTaskView).showTasksList() // shown in the UI
-    }
-
-    @Test fun populateTask_callsRepoAndUpdatesView() {
-        val testTask = Task("TITLE", "DESCRIPTION")
-        // Get a reference to the class under test
-        addEditTaskPresenter = AddEditTaskPresenter(testTask.id,
-                tasksRepository, addEditTaskView, true).apply {
-            // When the presenter is asked to populate an existing task
-            populateTask()
-        }
-
-        // Then the task repository is queried and the view updated
-        verify(tasksRepository).getTask(eq(testTask.id), capture(getTaskCallbackCaptor))
-        assertThat(addEditTaskPresenter.isDataMissing, `is`(true))
-
-        // Simulate callback
-        getTaskCallbackCaptor.value.onTaskLoaded(testTask)
-
-        verify(addEditTaskView).setTitle(testTask.title)
-        verify(addEditTaskView).setDescription(testTask.description)
-        assertThat(addEditTaskPresenter.isDataMissing, `is`(false))
     }
 }

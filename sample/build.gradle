@@ -111,7 +111,7 @@ dependencies {
   androidTestImplementation deps.androidx.test.espresso_contrib
   androidTestImplementation deps.androidx.test.espresso_intents
   androidTestImplementation deps.androidx.test.idling_concurrent
-  androidTestImplementation deps.androidx.test.espresso_idling_resource
+  implementation deps.androidx.test.espresso_idling_resource
 
   // Resolve conflicts between main and test APK:
   androidTestImplementation deps.androidx.annotation

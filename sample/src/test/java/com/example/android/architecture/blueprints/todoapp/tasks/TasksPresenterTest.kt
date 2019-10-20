@@ -40,7 +40,7 @@ class TasksPresenterTest {
 
     @Mock private lateinit var tasksRepository: TasksRepository
 
-    @Mock private lateinit var tasksView: TasksContract.View
+    @Mock private lateinit var tasksView: TasksView
 
     /**
      * [ArgumentCaptor] is a powerful Mockito API to capture argument values and use them to
@@ -58,7 +58,7 @@ class TasksPresenterTest {
         MockitoAnnotations.initMocks(this)
 
         // Get a reference to the class under test
-        tasksPresenter = TasksPresenter(tasksRepository, tasksView)
+        tasksPresenter = TasksPresenter(tasksView)
 
         // The presenter won't update the view unless it's active.
         `when`(tasksView.isActive).thenReturn(true)
@@ -67,14 +67,6 @@ class TasksPresenterTest {
         tasks = Lists.newArrayList(Task("Title1", "Description1"),
                 Task("Title2", "Description2").apply { isCompleted = true },
                 Task("Title3", "Description3").apply { isCompleted = true })
-    }
-
-    @Test fun createPresenter_setsThePresenterToView() {
-        // Get a reference to the class under test
-        tasksPresenter = TasksPresenter(tasksRepository, tasksView)
-
-        // Then the presenter is set to the view
-        verify(tasksView).presenter = tasksPresenter
     }
 
     @Test fun loadAllTasksFromRepositoryAndLoadIntoView() {
