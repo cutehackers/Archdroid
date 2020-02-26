@@ -38,9 +38,9 @@ import java.util.*
 /**
  * Display a grid of [Task]s. User can choose to view all, active or completed tasks.
  */
-@MvpFragmentView(TasksView::class, R.layout.tasks_frag)
+@MvpFragmentView(TasksContract.TasksView::class, R.layout.tasks_frag)
 @BindMvpPresenter(TasksPresenter::class)
-class TasksFragment : MvpTasksFragment(), TasksView {
+class TasksFragment : MvpTasksFragment() {
 
     override var isActive: Boolean = false
         get() = isAdded
@@ -55,7 +55,7 @@ class TasksFragment : MvpTasksFragment(), TasksView {
     /**
      * Listener for clicks on tasks in the ListView.
      */
-    internal var itemListener: TaskItemListener = object : TaskItemListener {
+    private var itemListener: TaskItemListener = object : TaskItemListener {
         override fun onTaskClick(clickedTask: Task) {
             presenter.openTaskDetails(clickedTask)
         }
