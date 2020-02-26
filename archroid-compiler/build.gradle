@@ -20,4 +20,6 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin_reflect"
     implementation "com.squareup:kotlinpoet:$versions.kotlin_poet"
+
+    implementation deps.androidx.lifecycle_runtime
 }
