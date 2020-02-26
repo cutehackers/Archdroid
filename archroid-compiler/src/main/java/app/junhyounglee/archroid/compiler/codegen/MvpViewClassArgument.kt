@@ -8,16 +8,16 @@ class MvpViewClassArgument(
     targetTypeName: TypeName,
     className: ClassName,
     val viewType: ClassName,
-    val presenterType: ClassName,
-    val layoutResId: Id
+    val layoutResId: Id,
+    val presenterType: ClassName
 ) : ClassArgument(targetTypeName, className) {
 
     class Builder {
         private lateinit var targetTypeName: TypeName
         private lateinit var className: ClassName
         private lateinit var viewType: ClassName
-        private lateinit var presenterType: ClassName
         private lateinit var layoutResId: Id
+        private lateinit var presenterType: ClassName
 
         fun setTargetTypeName(targetTypeName: TypeName) = apply { this.targetTypeName = targetTypeName }
 
@@ -33,16 +33,16 @@ class MvpViewClassArgument(
             return this::targetTypeName.isInitialized
                     && this::className.isInitialized
                     && this::viewType.isInitialized
-                    && this::presenterType.isInitialized
                     && this::layoutResId.isInitialized
+                    && this::presenterType.isInitialized
         }
 
         fun build() = MvpViewClassArgument(
             targetTypeName,
             className,
             viewType,
-            presenterType,
-            layoutResId
+            layoutResId,
+            presenterType
         )
     }
 

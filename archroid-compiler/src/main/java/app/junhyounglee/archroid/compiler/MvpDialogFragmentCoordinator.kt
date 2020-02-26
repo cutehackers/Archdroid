@@ -21,7 +21,7 @@ import javax.lang.model.element.TypeElement
  *  2. is SamplePresenter subclass of MvpPresenter which has SampleView as generic type?
  *     if not error. SamplePresenter should be a class which has a constructor containing SampleView
  *     parameter. If the presenter is an abstract class or an interface, it cannot be created from
- *     MVP view base class, MvpSampleFragmentView.
+ *     MVP view base class, MvpSampleDialogFragmentView.
  *
  *  3. create abstract mvp base class
  *     ex)

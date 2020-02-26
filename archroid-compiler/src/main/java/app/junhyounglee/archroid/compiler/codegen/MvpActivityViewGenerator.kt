@@ -6,9 +6,9 @@ import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import javax.annotation.processing.Filer
 
 class MvpActivityViewGenerator(filer: Filer)
-    : SourceFileGenerator<MvpActivityViewClassArgument>(filer) {
+    : SourceFileGenerator<MvpViewClassArgument>(filer) {
 
-    override fun onGenerate(argument: MvpActivityViewClassArgument): TypeSpec {
+    override fun onGenerate(argument: MvpViewClassArgument): TypeSpec {
         return argument.run {
             val builder = TypeSpec.classBuilder(argument.className.simpleName)
                 .addKdoc(DOCUMENTATION)
@@ -33,7 +33,7 @@ class MvpActivityViewGenerator(filer: Filer)
         }
     }
 
-    private fun getSuperClass(argument: MvpActivityViewClassArgument): ParameterizedTypeName {
+    private fun getSuperClass(argument: MvpViewClassArgument): ParameterizedTypeName {
         return argument.run {
             ClassName(CORE_PACKAGE, LIFECYCLE_CONTROLLER_CLASS).parameterizedBy(viewType, presenterType)
         }
@@ -77,7 +77,7 @@ class MvpActivityViewGenerator(filer: Filer)
             .build()
     }
 
-    private fun getFuncGetContext(argument: MvpActivityViewClassArgument): FunSpec {
+    private fun getFuncGetContext(argument: MvpViewClassArgument): FunSpec {
         return FunSpec.builder("getContext")
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
             .returns(ClassName.bestGuess("android.content.Context").copy(nullable = true))
@@ -85,7 +85,7 @@ class MvpActivityViewGenerator(filer: Filer)
             .build()
     }
 
-    private fun getFunCreateMvpView(argument: MvpActivityViewClassArgument): FunSpec {
+    private fun getFunCreateMvpView(argument: MvpViewClassArgument): FunSpec {
         return FunSpec.builder("onCreateMvpView")
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
             .returns(argument.viewType)
@@ -93,7 +93,7 @@ class MvpActivityViewGenerator(filer: Filer)
             .build()
     }
 
-    private fun getFunOnCreateMvpPresenter(argument: MvpActivityViewClassArgument): FunSpec {
+    private fun getFunOnCreateMvpPresenter(argument: MvpViewClassArgument): FunSpec {
         return FunSpec.builder("onCreateMvpPresenter")
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
             .returns(argument.presenterType)

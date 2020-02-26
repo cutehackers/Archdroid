@@ -26,10 +26,7 @@ abstract class MvpViewCoordinator(processingEnv: ProcessingEnvironment, klassTyp
 
                     // interface that extends MvpView
                     if (!isInterfaceType(typeMirror) || !isSubTypeOfType(typeMirror, MVP_VIEW_TYPE)) {
-                        error(
-                            entry.key,
-                            "$annotationName's view parameter should be an interface that extends from MvpView."
-                        )
+                        error(entry.key, "$annotationName's view parameter should be an interface that extends from MvpView.")
                         return false
                     }
 
@@ -89,12 +86,12 @@ abstract class MvpViewCoordinator(processingEnv: ProcessingEnvironment, klassTyp
                 val parentType = (parent as DeclaredType)
 
                 // check if the class extends from MvpPresenter<VIEW>
-                if (!isSubTypeOfType(toTypeElement(parentType).asType(), MVP_PRESENTER_TYPE)) {
-                    error(entry.key, "Class ${presenter.simpleName} should extend from MvpPresenter for $annotationName. current parent type is ${toTypeElement(parentType).asType()}")
+                if (!isSubTypeOfType(toTypeElement(parentType).asType(), ABS_MVP_PRESENTER_TYPE)) {
+                    error(entry.key, "Class ${presenter.simpleName} should extend from AbsMvpPresenter for $annotationName. current parent type is ${toTypeElement(parentType).asType()}")
                     return@parseMvpPresenter false
                 }
 
-                // check if a public constructor containing MvpView inherited view as a parameter is given
+                // check if a public constructor has a view parameter that extends from MvpView
                 var found = false
                 loop@ for (enclosed in presenter.enclosedElements) {
                     if (enclosed.kind == ElementKind.CONSTRUCTOR) {

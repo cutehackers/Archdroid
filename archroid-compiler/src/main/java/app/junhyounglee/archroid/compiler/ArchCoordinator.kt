@@ -266,6 +266,7 @@ abstract class ArchCoordinator(
 
         internal const val MVP_VIEW_TYPE = "app.junhyounglee.archroid.runtime.core.view.MvpView"
         internal const val MVP_PRESENTER_TYPE = "app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter<VIEW>"
+        internal const val ABS_MVP_PRESENTER_TYPE = "app.junhyounglee.archroid.runtime.core.presenter.AbsMvpPresenter<VIEW>"
 
         fun toTypeElement(type: DeclaredType) = type.asElement() as TypeElement
 
