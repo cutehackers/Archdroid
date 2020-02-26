@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import app.junhyounglee.archroid.annotations.BindMvpPresenter
 import app.junhyounglee.archroid.annotations.MvpFragmentView
-import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
+import app.junhyounglee.archroid.runtime.core.presenter.AbsMvpPresenter
 import app.junhyounglee.archroid.runtime.core.view.MvpView
 import kotlinx.android.synthetic.main.fragment_profile.*
 
@@ -45,7 +45,7 @@ interface ProfileView : MvpView {
     fun showName(name: String)
 }
 
-class ProfilePresenter(view: ProfileView) : MvpPresenter<ProfileView>(view) {
+class ProfilePresenter(view: ProfileView) : AbsMvpPresenter<ProfileView>(view) {
     override fun onCreate() {
         super.onCreate()
         view.showName("Archroid!!")

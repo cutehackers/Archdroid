@@ -2,7 +2,7 @@ package app.junhyounglee.archroid.sample
 
 import app.junhyounglee.archroid.annotations.BindMvpPresenter
 import app.junhyounglee.archroid.annotations.MvpDialogFragmentView
-import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
+import app.junhyounglee.archroid.runtime.core.presenter.AbsMvpPresenter
 import app.junhyounglee.archroid.runtime.core.view.MvpView
 import kotlinx.android.synthetic.main.dialog_fragment_welcome.*
 
@@ -24,7 +24,7 @@ interface WelcomeView : MvpView {
     fun show(message: String)
 }
 
-class WelcomePresenter(view: WelcomeView) : MvpPresenter<WelcomeView>(view) {
+class WelcomePresenter(view: WelcomeView) : AbsMvpPresenter<WelcomeView>(view) {
 
     override fun onCreate() {
         super.onCreate()
