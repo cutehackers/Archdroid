@@ -31,7 +31,7 @@ import javax.lang.model.type.TypeMirror
  *
  */
 class MvpActivityViewCoordinator(processingEnv: ProcessingEnvironment)
-    : MvpViewCoordinator(processingEnv, MvpActivityView::class.java) {
+    : MvpBaseCoordinator(processingEnv, MvpActivityView::class.java) {
 
     override fun onRoundProcess(roundEnv: RoundEnvironment, element: Element): ClassArgument? {
         val annotatedType = element as TypeElement
@@ -275,9 +275,7 @@ class MvpActivityViewCoordinator(processingEnv: ProcessingEnvironment)
 
     override fun onGenerateSourceFile(classArgument: ClassArgument) {
         val argument = classArgument as MvpViewClassArgument
-        MvpActivityViewGenerator(filer).run {
-            generate(argument)
-        }
+        MvpActivityViewGenerator(filer).apply { generate(argument) }
     }
 
 }
