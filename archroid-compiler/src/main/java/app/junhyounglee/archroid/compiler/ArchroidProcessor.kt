@@ -101,7 +101,7 @@ class ArchroidProcessor : AbstractProcessor() {
         coordinators = ImmutableList.builder<ArchCoordinator>().run {
             add(MvpActivityViewCoordinator(processingEnv))
             add(MvpFragmentViewCoordinator(processingEnv))
-            add(MvpDialogFragmentCoordinator(processingEnv))
+            add(MvpDialogFragmentViewCoordinator(processingEnv))
             build()
         }
     }

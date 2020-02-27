@@ -33,6 +33,7 @@ import javax.lang.model.util.Types
  * @MvpFragmentView
  * @MvpMapFragmentView
  * @MvpDialogFragmentView
+ * @MvpPresenter
  */
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class ArchCoordinator(
