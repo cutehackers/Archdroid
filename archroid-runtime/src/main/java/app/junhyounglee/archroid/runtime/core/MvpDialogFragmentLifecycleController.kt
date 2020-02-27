@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleObserver
 import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
 import app.junhyounglee.archroid.runtime.core.view.MvpView
 
@@ -103,11 +104,16 @@ abstract class MvpDialogFragmentLifecycleController<VIEW : MvpView, PRESENTER : 
 
     override fun onDestroy() {
         super.onDestroy()
-        lifecycle.removeObserver(presenter)
+
+        if (presenter is LifecycleObserver) {
+            lifecycle.removeObserver(presenter as LifecycleObserver)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        lifecycle.addObserver(presenter)
+        if (presenter is LifecycleObserver) {
+            lifecycle.addObserver(presenter as LifecycleObserver)
+        }
     }
 
     private fun onRootViewCreated(container: ViewGroup) {
