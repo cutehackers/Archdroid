@@ -1,10 +1,13 @@
 package app.junhyounglee.archroid.runtime.core.presenter
 
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import app.junhyounglee.archroid.runtime.core.view.MvpView
 
-abstract class AbsMvpPresenter<VIEW : MvpView>(private val _view: VIEW) : MvpPresenter<VIEW> {
+abstract class AbsMvpPresenter<VIEW : MvpView>(private val _view: VIEW)
+    : LifecycleObserver
+    , MvpPresenter<VIEW> {
 
     override val view: VIEW
         get() = _view
