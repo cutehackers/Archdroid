@@ -6,6 +6,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleObserver
 import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
 import app.junhyounglee.archroid.runtime.core.view.MvpView
 
@@ -83,12 +84,17 @@ abstract class MvpActivityLifecycleController<VIEW : MvpView, PRESENTER : MvpPre
         setContentView(view.layoutResId)
         onRootViewCreated(window.decorView.findViewById<FrameLayout>(android.R.id.content))
 
-        lifecycle.addObserver(presenter)
+        if (presenter is LifecycleObserver) {
+            lifecycle.addObserver(presenter as LifecycleObserver)
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        lifecycle.removeObserver(presenter)
+
+        if (presenter is LifecycleObserver) {
+            lifecycle.removeObserver(presenter as LifecycleObserver)
+        }
     }
 
     private fun onRootViewCreated(container: ViewGroup) {
