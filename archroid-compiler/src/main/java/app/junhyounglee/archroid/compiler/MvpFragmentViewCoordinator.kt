@@ -5,7 +5,6 @@ import app.junhyounglee.archroid.annotations.MvpFragmentView
 import app.junhyounglee.archroid.compiler.codegen.ClassArgument
 import app.junhyounglee.archroid.compiler.codegen.MvpFragmentViewGenerator
 import app.junhyounglee.archroid.compiler.codegen.MvpViewClassArgument
-import app.junhyounglee.archroid.compiler.codegen.MvpViewCoordinator
 import com.squareup.kotlinpoet.ClassName
 import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
@@ -31,7 +30,7 @@ import javax.lang.model.element.TypeElement
  *
  */
 class MvpFragmentViewCoordinator(processingEnv: ProcessingEnvironment)
-    : MvpViewCoordinator(processingEnv, MvpFragmentView::class.java) {
+    : MvpBaseCoordinator(processingEnv, MvpFragmentView::class.java) {
 
     override fun onRoundProcess(roundEnv: RoundEnvironment, element: Element): ClassArgument? {
         val annotatedType = element as TypeElement
@@ -106,8 +105,6 @@ class MvpFragmentViewCoordinator(processingEnv: ProcessingEnvironment)
 
     override fun onGenerateSourceFile(classArgument: ClassArgument) {
         val argument = classArgument as MvpViewClassArgument
-        MvpFragmentViewGenerator(filer).run {
-            generate(argument)
-        }
+        MvpFragmentViewGenerator(filer).apply { generate(argument) }
     }
 }
