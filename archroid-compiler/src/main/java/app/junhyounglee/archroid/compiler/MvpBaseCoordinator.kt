@@ -24,18 +24,6 @@ abstract class MvpBaseCoordinator(processingEnv: ProcessingEnvironment, klassTyp
                     getViewType(annotationName, entry.toPair())?.also { viewType: ClassName ->
                         builder.setViewType(viewType)
                     }
-//                    val typeMirror = entry.value.value as TypeMirror
-//                    warning("Archroid> $annotationName argument key: ${entry.key.simpleName}, value: ${entry.value.value}, interface(${isInterfaceType(typeMirror)}), subTypeOf(${isSubTypeOfType(typeMirror, MVP_VIEW_TYPE)})")
-//
-//                    // interface that extends MvpView
-//                    if (!isInterfaceType(typeMirror) || !isSubTypeOfType(typeMirror, MVP_VIEW_TYPE)) {
-//                        error(entry.key, "$annotationName's view parameter should be an interface that extends from MvpView.")
-//                        return false
-//                    }
-//
-//                    // set view class argument
-//                    val viewType = ClassName.bestGuess(getQualifiedTypeName(typeMirror))
-//                    builder.setViewType(viewType)
                 }
 
                 // @param layoutResId
@@ -84,54 +72,6 @@ abstract class MvpBaseCoordinator(processingEnv: ProcessingEnvironment, klassTyp
                 getPresenterType(annotationName, entry.toPair())?.also { presenterType: ClassName ->
                     builder.setPresenterType(presenterType)
                 }
-//                val typeMirror = entry.value.value as TypeMirror
-//                warning("Archroid> $annotationName argument key: ${entry.key.simpleName}, value: ${entry.value.value}")
-//
-//                if (!isClassType(typeMirror)) {
-//                    error(entry.key, "$annotationName should have appropriate presenter class.")
-//                    return@parseMvpPresenter false
-//                }
-//
-//                val presenterType = typeMirror as DeclaredType
-//                val presenter = presenterType.asElement()
-//
-//
-//                // check if it's an abstract class
-//                if (presenter.modifiers.contains(Modifier.ABSTRACT)) {
-//                    error(entry.key, "Abstract class ${presenter.simpleName} cannot be annotated with $annotationName.")
-//                    return@parseMvpPresenter false
-//                }
-//
-//                val parent: TypeMirror = (presenterType.asElement() as TypeElement).superclass
-//                val parentType = (parent as DeclaredType)
-//
-//                // check if the class extends from MvpPresenter<VIEW>
-//                if (!isSubTypeOfType(toTypeElement(parentType).asType(), ABS_MVP_PRESENTER_TYPE)) {
-//                    error(entry.key, "Class ${presenter.simpleName} should extend from AbsMvpPresenter for $annotationName. current parent type is ${toTypeElement(parentType).asType()}")
-//                    return@parseMvpPresenter false
-//                }
-//
-//                // check if a public constructor has a view parameter that extends from MvpView
-//                var found = false
-//                loop@ for (enclosed in presenter.enclosedElements) {
-//                    if (enclosed.kind == ElementKind.CONSTRUCTOR) {
-//                        val constructor = enclosed as ExecutableElement
-//                        for (param: VariableElement in constructor.parameters) {
-//                            // has MvpView parameter
-//                            if (isSubTypeOfType(param.asType(), MVP_VIEW_TYPE)) {
-//                                found = true
-//                                break
-//                            }
-//                        }
-//                    }
-//                }
-//                if (!found) {
-//                    error(entry.key, "$annotationName requires a constructor that contains a view extends from MvpView.")
-//                    return@parseMvpPresenter false
-//                }
-//
-//                // set presenter class argument
-//                builder.setPresenterType(ClassName.bestGuess(getQualifiedTypeName(typeMirror)))
             }
         }
 
@@ -142,6 +82,7 @@ abstract class MvpBaseCoordinator(processingEnv: ProcessingEnvironment, klassTyp
      * @param abstractCheck if true, this will check if a given presenter class abstract and returns
      * false if it's abstract? default value is true.
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     protected fun getPresenterType(
         annotationName: Name,
         entry: Pair<ExecutableElement, AnnotationValue>,
@@ -170,7 +111,7 @@ abstract class MvpBaseCoordinator(processingEnv: ProcessingEnvironment, klassTyp
         val parentType = (parent as DeclaredType)
 
         // check if the class extends from MvpPresenter<VIEW>
-        if (!isSubTypeOfType(toTypeElement(parentType).asType(), ABS_MVP_PRESENTER_TYPE)) {
+        if (!isSubTypeOfType(toTypeElement(parentType).asType(), MVP_PRESENTER_TYPE)) {
             error(entry.first, "Class ${presenter.simpleName} should extend from AbsMvpPresenter for $annotationName. current parent type is ${toTypeElement(parentType).asType()}")
             return null
         }
@@ -195,6 +136,59 @@ abstract class MvpBaseCoordinator(processingEnv: ProcessingEnvironment, klassTyp
         }
 
         // presenter class
+        return ClassName.bestGuess(getQualifiedTypeName(typeMirror))
+    }
+
+    /**
+     * Verify concrete presenter's super interface and return a class type
+     *  1. verify if annotated class(annotatedType) is abstract if abstractCheck option is allowed
+     */
+    protected fun getSuperInterfaceTypeOfPresenter(
+        annotatedType: TypeElement,
+        annotationName: Name,
+        entry: Pair<ExecutableElement, AnnotationValue>,
+        abstractCheck: Boolean = false
+    ): ClassName? {
+        val typeMirror = entry.second.value as TypeMirror
+        warning("Archroid> $annotationName argument key: ${entry.first.simpleName}, value: ${entry.second.value}")
+
+        // check if super interface is an interface type.
+        if (!isInterfaceType(typeMirror)) {
+            error(entry.first, "$annotationName should have appropriate super interface.")
+            return null
+        }
+
+        // concrete class annotated by @MvpPresenter
+        val presenter = annotatedType
+
+        // check if it's an abstract class
+        if (abstractCheck) {
+            if (presenter.modifiers.contains(Modifier.ABSTRACT)) {
+                error(entry.first, "Abstract class ${presenter.simpleName} cannot be annotated with $annotationName.")
+                return null
+            }
+        }
+
+        // check if a public constructor has a view parameter that extends from MvpView
+        var found = false
+        loop@ for (enclosed in presenter.enclosedElements) {
+            if (enclosed.kind == ElementKind.CONSTRUCTOR) {
+                val constructor = enclosed as ExecutableElement
+                for (param: VariableElement in constructor.parameters) {
+                    // has MvpView parameter
+                    if (isSubTypeOfType(param.asType(), MVP_VIEW_TYPE)) {
+                        found = true
+                        break
+                    }
+                }
+            }
+        }
+        if (!found) {
+            error(entry.first, "$annotationName requires a constructor that contains a view extends from MvpView.")
+            return null
+        }
+
+        // super interface of presenter
         return ClassName.bestGuess(getQualifiedTypeName(typeMirror))
     }
 
