@@ -14,13 +14,19 @@ import javax.lang.model.element.TypeElement
 
 /**
  * @MvpPresenter(SampleView::class, SamplePresenter::class)
+ * Parse @MvpPresenter annotations and create a base class for concrete presenter class.
+ * Base presenter class will be created as a form of an abstract class which extends from
+ * AbsMvpPresenter class. And it's name is decided by the class annotated with @MvpPresenter.
  *
- *  1. create an abstract mvp base presenter class
- *      ex)
- *      abstract class MvpSamplePresenter(view: SampleView)
- *          : AbsMvpPresenter<SampleView>(view)
- *          , SamplePresenter {
- *      }
+ *  ex)
+ *  interface ISamplePresenter {
+ *      fun foo()
+ *  }
+ *
+ *  @MvpPresenter(SampleView::class, ISamplePresenter::class)
+ *  class SamplePresenter(view: SampleView) : MvpSamplePresenter(view) {
+ *      ...
+ *  }
  */
 class MvpPresenterCoordinator(processingEnv: ProcessingEnvironment)
     : MvpBaseCoordinator(processingEnv, MvpPresenter::class.java) {
@@ -32,19 +38,6 @@ class MvpPresenterCoordinator(processingEnv: ProcessingEnvironment)
         return parseMvpPresenter(annotatedType)
     }
 
-    /**
-     * Parse following annotations:
-     *
-     *  interface ISamplePresenter {
-     *      fun foo()
-     *  }
-     *
-     *  @MvpPresenter(SampleView::class, ISamplePresenter::class)
-     *  class SamplePresenter(view: SampleView) : MvpSamplePresenter(view) {
-     *      ...
-     *  }
-     *
-     */
     private fun parseMvpPresenter(annotatedType: TypeElement): ClassArgument? {
         /*
          * Step 1. only class can be annotated with @MvpPresenter
@@ -55,7 +48,9 @@ class MvpPresenterCoordinator(processingEnv: ProcessingEnvironment)
             return null
         }
 
-        //val builder = MvpPresenterClassArgument.builder()
+        val builder = MvpPresenterClassArgument.builder()
+            .setClassName(ClassName(getPackage(annotatedType).qualifiedName.toString(), createClassName(annotatedType)))
+            .setTargetTypeName(getTargetTypeName(annotatedType))
 
         /*
          * Step 2. validate annotations for this class
@@ -81,7 +76,7 @@ class MvpPresenterCoordinator(processingEnv: ProcessingEnvironment)
                             }
                             // @param presenter
                             entry.key.simpleName.contentEquals("presenter") -> {
-                                getPresenterType(annotationName, entry.toPair(), abstractCheck = false)?.also { presenterType: ClassName ->
+                                getSuperInterfaceTypeOfPresenter(annotatedType, annotationName, entry.toPair())?.also { presenterType: ClassName ->
                                     builder.setPresenterType(presenterType)
                                 }
                             }
