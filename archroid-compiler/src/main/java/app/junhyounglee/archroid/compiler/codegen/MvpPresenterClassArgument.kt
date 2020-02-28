@@ -38,4 +38,9 @@ class MvpPresenterClassArgument(
             presenterType
         )
     }
+
+
+    companion object {
+        fun builder() = Builder()
+    }
 }

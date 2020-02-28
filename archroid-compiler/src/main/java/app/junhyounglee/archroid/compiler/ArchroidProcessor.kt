@@ -102,6 +102,7 @@ class ArchroidProcessor : AbstractProcessor() {
             add(MvpActivityViewCoordinator(processingEnv))
             add(MvpFragmentViewCoordinator(processingEnv))
             add(MvpDialogFragmentViewCoordinator(processingEnv))
+            add(MvpPresenterCoordinator(processingEnv))
             build()
         }
     }
