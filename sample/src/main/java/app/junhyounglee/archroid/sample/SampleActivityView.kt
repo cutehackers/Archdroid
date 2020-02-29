@@ -3,7 +3,7 @@ package app.junhyounglee.archroid.sample
 import android.os.Bundle
 import app.junhyounglee.archroid.annotations.BindMvpPresenter
 import app.junhyounglee.archroid.annotations.MvpActivityView
-import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
+import app.junhyounglee.archroid.runtime.core.presenter.AbsMvpPresenter
 import app.junhyounglee.archroid.runtime.core.view.MvpView
 import kotlinx.android.synthetic.main.activity_sample.*
 import kotlinx.android.synthetic.main.activity_sample.view.*
@@ -106,7 +106,7 @@ interface SampleView : MvpView {
     fun say(message: String)
 }
 
-class SamplePresenter(view: SampleView) : MvpPresenter<SampleView>(view) {
+class SamplePresenter(view: SampleView) : AbsMvpPresenter<SampleView>(view) {
 
     override fun onResume() {
         super.onResume()
