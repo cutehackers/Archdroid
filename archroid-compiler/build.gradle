@@ -18,6 +18,9 @@ dependencies {
 
     compileOnly files(Jvm.current().getToolsJar())
 
+    api deps.incap.runtime
+    compileOnly deps.incap.processor
+
     implementation "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin_reflect"
     implementation "com.squareup:kotlinpoet:$versions.kotlin_poet"
 

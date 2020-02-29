@@ -21,7 +21,6 @@ buildscript {
       androidx_card: '1.0.0',
       androidx_recyclerview: '1.0.0',
       androidx_room: '2.2.0-rc01',
-      androidx_lifecycle: '2.2.0',
       material: '1.0.0',
       guava: '27.0.1-android',
       incap : '0.2',
@@ -46,7 +45,6 @@ buildscript {
         'cardview': "androidx.cardview:cardview:$versions.androidx_card",
         'room_runtime': "androidx.room:room-runtime:$versions.androidx_room",
         'room_compiler': "androidx.room:room-compiler:$versions.androidx_room",
-        'lifecycle_runtime': "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx_lifecycle",
         'recyclerview': "androidx.recyclerview:recyclerview:$versions.androidx_recyclerview",
         'legacy_support_v4': "androidx.legacy:legacy-support-v4:$versions.androidx_legacy_support",
         'test': [
