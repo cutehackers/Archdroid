@@ -1,6 +1,5 @@
 package com.example.android.architecture.blueprints.todoapp.tasks
 
-import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
 import app.junhyounglee.archroid.runtime.core.view.MvpView
 import com.example.android.architecture.blueprints.todoapp.data.Task
 
@@ -43,7 +42,7 @@ interface TasksContract {
         fun showFilteringPopUpMenu()
     }
 
-    interface TasksPresenter : MvpPresenter<TasksView> {
+    interface TasksPresenter {
 
         var currentFiltering: TasksFilterType
 

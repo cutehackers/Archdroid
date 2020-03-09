@@ -16,23 +16,24 @@
 package com.example.android.architecture.blueprints.todoapp.tasks
 
 import android.app.Activity
-import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
+import app.junhyounglee.archroid.annotations.MvpPresenter
 import com.example.android.architecture.blueprints.todoapp.Injection
 import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskActivity
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
 import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingResource
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Listens to user actions from the UI ([TasksFragment]), retrieves the data and updates the
  * UI as required.
  */
-class TasksPresenter(tasksView: TasksContract.TasksView) : MvpPresenter<TasksContract.TasksView>(tasksView) {
+@MvpPresenter(TasksContract.TasksView::class, TasksContract.TasksPresenter::class)
+class TasksPresenter(tasksView: TasksContract.TasksView) : MvpTasksPresenter(tasksView) {
 
     private lateinit var tasksRepository: TasksRepository
-    var currentFiltering = TasksFilterType.ALL_TASKS
+    override var currentFiltering = TasksFilterType.ALL_TASKS
 
     private var firstLoad = true
 
@@ -49,7 +50,7 @@ class TasksPresenter(tasksView: TasksContract.TasksView) : MvpPresenter<TasksCon
         loadTasks(false)
     }
 
-    fun result(requestCode: Int, resultCode: Int) {
+    override fun result(requestCode: Int, resultCode: Int) {
         // If a task was successfully added, show snackbar
         if (AddEditTaskActivity.REQUEST_ADD_TASK ==
                 requestCode && Activity.RESULT_OK == resultCode) {
@@ -57,7 +58,7 @@ class TasksPresenter(tasksView: TasksContract.TasksView) : MvpPresenter<TasksCon
         }
     }
 
-    fun loadTasks(forceUpdate: Boolean) {
+    override fun loadTasks(forceUpdate: Boolean) {
         // Simplification for sample: a network reload will be forced on first load.
         loadTasks(forceUpdate || firstLoad, true)
         firstLoad = false
@@ -152,27 +153,27 @@ class TasksPresenter(tasksView: TasksContract.TasksView) : MvpPresenter<TasksCon
         }
     }
 
-    fun addNewTask() {
+    override fun addNewTask() {
         view.showAddTask()
     }
 
-    fun openTaskDetails(requestedTask: Task) {
+    override fun openTaskDetails(requestedTask: Task) {
         view.showTaskDetailsUi(requestedTask.id)
     }
 
-    fun completeTask(completedTask: Task) {
+    override fun completeTask(completedTask: Task) {
         tasksRepository.completeTask(completedTask)
         view.showTaskMarkedComplete()
         loadTasks(false, false)
     }
 
-    fun activateTask(activeTask: Task) {
+    override fun activateTask(activeTask: Task) {
         tasksRepository.activateTask(activeTask)
         view.showTaskMarkedActive()
         loadTasks(false, false)
     }
 
-    fun clearCompletedTasks() {
+    override fun clearCompletedTasks() {
         tasksRepository.clearCompletedTasks()
         view.showCompletedTasksCleared()
         loadTasks(false, false)
