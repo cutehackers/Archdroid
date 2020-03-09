@@ -2,6 +2,8 @@ package app.junhyounglee.archroid.compiler
 
 import app.junhyounglee.archroid.compiler.codegen.MvpViewClassArgument
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.asTypeName
 import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.*
 import javax.lang.model.type.DeclaredType
@@ -110,9 +112,11 @@ abstract class MvpBaseCoordinator(processingEnv: ProcessingEnvironment, klassTyp
         val parent: TypeMirror = (presenterType.asElement() as TypeElement).superclass
         val parentType = (parent as DeclaredType)
 
+        warning("Archroid> presenterType: ${toTypeElement(presenterType).qualifiedName}, superType: ${getSuperClassAsTypeElement(toTypeElement(presenterType))?.asClassName()?.simpleName}")
+
         // check if the class extends from MvpPresenter<VIEW>
         if (!isSubTypeOfType(toTypeElement(parentType).asType(), MVP_PRESENTER_TYPE)) {
-            error(entry.first, "Class ${presenter.simpleName} should extend from AbsMvpPresenter for $annotationName. current parent type is ${toTypeElement(parentType).asType()}")
+            error(entry.first, "Class ${presenter.simpleName} should extend from AbsMvpPresenter for $annotationName. current parent type is ${toTypeElement(parentType).asType()}.")
             return null
         }
 
