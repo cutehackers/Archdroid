@@ -204,6 +204,16 @@ abstract class ArchCoordinator(
         }
     }
 
+    fun getSuperClassAsTypeElement(element: TypeElement): TypeElement? {
+        val parent: TypeMirror = element.superclass
+        if (parent is DeclaredType) {
+            if (parent.asElement() is TypeElement) {
+                return toTypeElement(parent)
+            }
+        }
+        return null
+    }
+
     /**
      * Create a new class name with prefix 'Mvp'
      * @param annotatedType annotated class type element

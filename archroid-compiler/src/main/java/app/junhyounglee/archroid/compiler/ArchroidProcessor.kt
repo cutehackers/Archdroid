@@ -1,14 +1,11 @@
 package app.junhyounglee.archroid.compiler
 
 import app.junhyounglee.archroid.annotations.MvpActivityView
-import app.junhyounglee.archroid.annotations.MvpDialogFragmentView
-import app.junhyounglee.archroid.annotations.MvpFragmentView
 import com.google.auto.common.BasicAnnotationProcessor
 import com.google.auto.service.AutoService
 import com.google.common.collect.ImmutableList
 import com.google.common.collect.ImmutableSet
 import com.google.common.collect.SetMultimap
-import com.sun.source.util.Trees
 import net.ltgt.gradle.incap.IncrementalAnnotationProcessor
 import net.ltgt.gradle.incap.IncrementalAnnotationProcessorType
 import java.io.PrintWriter
@@ -30,6 +27,7 @@ import javax.tools.Diagnostic
  */
 @AutoService(Processor::class)
 @IncrementalAnnotationProcessor(IncrementalAnnotationProcessorType.DYNAMIC)
+@SupportedOptions(ArchroidProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME)
 class ArchroidProcessor : AbstractProcessor() {
 
     private var sdk: Int = 1
@@ -114,14 +112,19 @@ class ArchroidProcessor : AbstractProcessor() {
      */
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
         if (annotations.isEmpty()) {
-            return true
+            return false
+        }
+
+        val generatedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME] ?: run {
+            error("Can't find the target directory for generated Kotlin files.")
+            return false
         }
 
         coordinators.forEach { coordinator ->
             coordinator.process(roundEnv)
         }
 
-        return false
+        return true
     }
 
     fun warning(message: String, annotation: Element? = null) {
@@ -152,6 +155,7 @@ class ArchroidProcessor : AbstractProcessor() {
 
 
     companion object {
+        const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
         const val OPTION_MIN_SDK = "archroid_min_sdk"
         const val OPTION_DEBUGGABLE = "archroid_debuggable"
     }
