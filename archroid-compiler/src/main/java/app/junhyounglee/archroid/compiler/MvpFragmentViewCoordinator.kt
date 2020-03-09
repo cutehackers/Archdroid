@@ -105,6 +105,6 @@ class MvpFragmentViewCoordinator(processingEnv: ProcessingEnvironment)
 
     override fun onGenerateSourceFile(classArgument: ClassArgument) {
         val argument = classArgument as MvpViewClassArgument
-        MvpFragmentViewGenerator(filer).apply { generate(argument) }
+        MvpFragmentViewGenerator(processingEnv).apply { generate(argument) }
     }
 }
