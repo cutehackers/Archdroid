@@ -4,9 +4,10 @@ import app.junhyounglee.archroid.compiler.Id
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import javax.annotation.processing.Filer
+import javax.annotation.processing.ProcessingEnvironment
 
-class MvpDialogFragmentViewGenerator (filer: Filer)
-    : SourceFileGenerator<MvpViewClassArgument>(filer) {
+class MvpDialogFragmentViewGenerator (processingEnv: ProcessingEnvironment)
+    : SourceFileGenerator<MvpViewClassArgument>(processingEnv) {
 
     override fun onGenerate(argument: MvpViewClassArgument): TypeSpec {
         return argument.run {

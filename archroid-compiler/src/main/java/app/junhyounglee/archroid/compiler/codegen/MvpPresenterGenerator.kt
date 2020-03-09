@@ -4,6 +4,7 @@ package app.junhyounglee.archroid.compiler.codegen
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import javax.annotation.processing.Filer
+import javax.annotation.processing.ProcessingEnvironment
 
 /**
  * Create an abstract mvp base presenter class file.
@@ -14,7 +15,8 @@ import javax.annotation.processing.Filer
  *      , SamplePresenter {
  *  }
  */
-class MvpPresenterGenerator(filer: Filer) : SourceFileGenerator<MvpPresenterClassArgument>(filer) {
+class MvpPresenterGenerator(processingEnv: ProcessingEnvironment)
+    : SourceFileGenerator<MvpPresenterClassArgument>(processingEnv) {
 
     override fun onGenerate(argument: MvpPresenterClassArgument): TypeSpec {
         return argument.run {
