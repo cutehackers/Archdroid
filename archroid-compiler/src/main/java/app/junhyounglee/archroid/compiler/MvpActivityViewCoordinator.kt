@@ -122,7 +122,7 @@ class MvpActivityViewCoordinator(processingEnv: ProcessingEnvironment)
 
     override fun onGenerateSourceFile(classArgument: ClassArgument) {
         val argument = classArgument as MvpViewClassArgument
-        MvpActivityViewGenerator(filer).apply { generate(argument) }
+        MvpActivityViewGenerator(processingEnv).apply { generate(argument) }
     }
 
 }

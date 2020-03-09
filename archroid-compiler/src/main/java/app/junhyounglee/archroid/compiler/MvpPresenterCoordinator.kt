@@ -96,6 +96,6 @@ class MvpPresenterCoordinator(processingEnv: ProcessingEnvironment)
 
     override fun onGenerateSourceFile(classArgument: ClassArgument) {
         val argument = classArgument as MvpPresenterClassArgument
-        MvpPresenterGenerator(filer).apply { generate(argument) }
+        MvpPresenterGenerator(this.processingEnv).apply { generate(argument) }
     }
 }
