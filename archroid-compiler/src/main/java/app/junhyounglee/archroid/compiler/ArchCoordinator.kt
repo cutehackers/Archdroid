@@ -227,11 +227,14 @@ abstract class ArchCoordinator(
      * Retrieve android resource id object from the given element and value.
      */
     protected fun getResourceIdentifier(element: Element, annotationMirror: AnnotationMirror, annotationValue: AnnotationValue, value: Int): Id {
-        val tree: JCTree = trees.getTree(element, annotationMirror, annotationValue) as JCTree
-        rScanner.reset()
-        tree.accept(rScanner)
-        if (rScanner.resourceIds.isNotEmpty()) {
-            return rScanner.resourceIds.values.iterator().next()
+        val tree: JCTree? = trees?.getTree(element, annotationMirror, annotationValue) as JCTree
+        tree?.also {
+            // tree can be null if the references are compiled types and not source
+            rScanner.reset()
+            it.accept(rScanner)
+            if (rScanner.resourceIds.isNotEmpty()) {
+                return rScanner.resourceIds.values.iterator().next()
+            }
         }
         return Id(value)
     }
@@ -272,7 +275,7 @@ abstract class ArchCoordinator(
 
     companion object {
 
-        internal lateinit var trees: Trees
+        internal var trees: Trees? = null
         private val rScanner = RScanner()
 
         internal const val MVP_VIEW_TYPE = "app.junhyounglee.archroid.runtime.core.view.MvpView"
