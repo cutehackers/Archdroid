@@ -1,7 +1,10 @@
 package app.junhyounglee.archroid.compiler.codegen
 
+import app.junhyounglee.archroid.compiler.ArchroidProcessor
+import app.junhyounglee.archroid.compiler.error
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.TypeSpec
+import java.io.File
 import java.io.IOException
 import javax.annotation.processing.ProcessingEnvironment
 
@@ -16,9 +19,24 @@ abstract class SourceFileGenerator<ARGS : ClassArgument>(private val processingE
          */
 
         val klass = onGenerate(argument)
-        val filer = processingEnv.filer
+        //val filer = processingEnv.filer
 
-        FileSpec.get(argument.className.packageName, klass).writeTo(filer)
+        //FileSpec.get(argument.className.packageName, klass).writeTo(filer)
+        try {
+            val kaptKotlinGeneratedDir = processingEnv.options[ArchroidProcessor.OPTION_KAPT_KOTLIN_GENERATED]
+            if (kaptKotlinGeneratedDir == null) {
+                processingEnv.error("Can't find the target directory for generated Kotlin files.")
+                return
+            }
+
+            val dirs = File(kaptKotlinGeneratedDir).apply {
+                mkdirs()
+            }
+            FileSpec.get(argument.className.packageName, klass).writeTo(dirs)
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
     }
 
     abstract fun onGenerate(argument: ARGS): TypeSpec
