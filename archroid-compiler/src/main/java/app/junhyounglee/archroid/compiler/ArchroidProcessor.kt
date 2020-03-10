@@ -27,7 +27,6 @@ import javax.tools.Diagnostic
  */
 @AutoService(Processor::class)
 @IncrementalAnnotationProcessor(IncrementalAnnotationProcessorType.DYNAMIC)
-@SupportedOptions(ArchroidProcessor.KAPT_KOTLIN_GENERATED_OPTION_NAME)
 class ArchroidProcessor : AbstractProcessor() {
 
     private var sdk: Int = 1
@@ -47,7 +46,9 @@ class ArchroidProcessor : AbstractProcessor() {
         return ImmutableSet.builder<String>().run {
             add(OPTION_MIN_SDK)
             add(OPTION_DEBUGGABLE)
-            add(IncrementalAnnotationProcessorType.ISOLATING.processorOption)
+            if (ArchCoordinator.trees != null) {
+                add(IncrementalAnnotationProcessorType.ISOLATING.processorOption)
+            }
             build()
         }
     }
@@ -115,11 +116,6 @@ class ArchroidProcessor : AbstractProcessor() {
             return false
         }
 
-        val generatedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME] ?: run {
-            error("Can't find the target directory for generated Kotlin files.")
-            return false
-        }
-
         coordinators.forEach { coordinator ->
             coordinator.process(roundEnv)
         }
@@ -155,7 +151,6 @@ class ArchroidProcessor : AbstractProcessor() {
 
 
     companion object {
-        const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
         const val OPTION_MIN_SDK = "archroid_min_sdk"
         const val OPTION_DEBUGGABLE = "archroid_debuggable"
     }
