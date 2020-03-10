@@ -46,6 +46,7 @@ class ArchroidProcessor : AbstractProcessor() {
         return ImmutableSet.builder<String>().run {
             add(OPTION_MIN_SDK)
             add(OPTION_DEBUGGABLE)
+            add(OPTION_KAPT_KOTLIN_GENERATED)
             if (ArchCoordinator.trees != null) {
                 add(IncrementalAnnotationProcessorType.ISOLATING.processorOption)
             }
@@ -153,6 +154,7 @@ class ArchroidProcessor : AbstractProcessor() {
     companion object {
         const val OPTION_MIN_SDK = "archroid_min_sdk"
         const val OPTION_DEBUGGABLE = "archroid_debuggable"
+        const val OPTION_KAPT_KOTLIN_GENERATED = "kapt.kotlin.generated"
     }
 }
 
