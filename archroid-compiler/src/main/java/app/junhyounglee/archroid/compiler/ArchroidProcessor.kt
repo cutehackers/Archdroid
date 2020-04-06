@@ -114,7 +114,7 @@ class ArchroidProcessor : AbstractProcessor() {
      */
     override fun process(annotations: MutableSet<out TypeElement>, roundEnv: RoundEnvironment): Boolean {
         if (annotations.isEmpty()) {
-            return false
+            return true
         }
 
         coordinators.forEach { coordinator ->

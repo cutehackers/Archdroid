@@ -206,6 +206,8 @@ abstract class ArchCoordinator(
 
     fun getSuperClassAsTypeElement(element: TypeElement): TypeElement? {
         val parent: TypeMirror = element.superclass
+        if (parent.kind == TypeKind.NONE) return null
+
         if (parent is DeclaredType) {
             if (parent.asElement() is TypeElement) {
                 return toTypeElement(parent)
