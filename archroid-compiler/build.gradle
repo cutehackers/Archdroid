@@ -7,13 +7,6 @@ apply plugin: 'kotlin-kapt'
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-sourceSets {
-    // Add kotlin generated source folder
-    ["mockDebug", "prodDebug", "prodRelease"].each { current ->
-        main.java.srcDirs += files("${buildDir}/generated/source/kapt/$current", "${buildDir}/generated/source/kaptKotlin/$current")
-    }
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
