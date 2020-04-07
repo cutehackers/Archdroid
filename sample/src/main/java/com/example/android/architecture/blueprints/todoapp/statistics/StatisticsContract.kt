@@ -1,5 +1,5 @@
 /*
- * Copyright 2017, The Android Open Source Project
+ * Copyright (C) 2017 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,38 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.android.architecture.blueprints.todoapp.taskdetail
+package com.example.android.architecture.blueprints.todoapp.statistics
 
 import app.junhyounglee.archroid.runtime.core.view.MvpView
 
 /**
  * This specifies the contract between the view and the presenter.
  */
-interface TaskDetailView : MvpView {
+interface StatisticsContract {
 
-    val taskId: String
+    interface View : MvpView {
 
-    val isActive: Boolean
+        val isActive: Boolean
 
-    fun setLoadingIndicator(active: Boolean)
+        fun setProgressIndicator(active: Boolean)
 
-    fun showMissingTask()
+        fun showStatistics(numberOfIncompleteTasks: Int, numberOfCompletedTasks: Int)
 
-    fun hideTitle()
+        fun showLoadingStatisticsError()
+    }
 
-    fun showTitle(title: String)
-
-    fun hideDescription()
-
-    fun showDescription(description: String)
-
-    fun showCompletionStatus(complete: Boolean)
-
-    fun showEditTask(taskId: String)
-
-    fun showTaskDeleted()
-
-    fun showTaskMarkedComplete()
-
-    fun showTaskMarkedActive()
+    interface Presenter { }
 }

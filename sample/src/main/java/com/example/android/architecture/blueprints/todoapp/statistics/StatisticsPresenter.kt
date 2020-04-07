@@ -15,8 +15,7 @@
  */
 package com.example.android.architecture.blueprints.todoapp.statistics
 
-
-import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
+import app.junhyounglee.archroid.annotations.MvpPresenter
 import com.example.android.architecture.blueprints.todoapp.Injection
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
@@ -27,9 +26,10 @@ import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingRe
  * Listens to user actions from the UI ([StatisticsFragment]), retrieves the data and updates
  * the UI as required.
  */
+@MvpPresenter(StatisticsContract.View::class, StatisticsContract.Presenter::class)
 class StatisticsPresenter(
-    statisticsView: StatisticsView
-) : MvpPresenter<StatisticsView>(statisticsView) {
+    statisticsView: StatisticsContract.View
+) : MvpStatisticsPresenter(statisticsView) {
 
     private lateinit var tasksRepository: TasksRepository
 

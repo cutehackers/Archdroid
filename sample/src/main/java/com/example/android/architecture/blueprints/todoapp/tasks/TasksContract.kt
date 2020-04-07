@@ -42,7 +42,7 @@ interface TasksContract {
         fun showFilteringPopUpMenu()
     }
 
-    interface TasksPresenter {
+    interface Presenter {
 
         var currentFiltering: TasksFilterType
 

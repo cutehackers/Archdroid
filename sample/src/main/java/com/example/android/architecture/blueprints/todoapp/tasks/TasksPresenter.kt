@@ -29,7 +29,7 @@ import java.util.*
  * Listens to user actions from the UI ([TasksFragment]), retrieves the data and updates the
  * UI as required.
  */
-@MvpPresenter(TasksContract.TasksView::class, TasksContract.TasksPresenter::class)
+@MvpPresenter(TasksContract.TasksView::class, TasksContract.Presenter::class)
 class TasksPresenter(tasksView: TasksContract.TasksView) : MvpTasksPresenter(tasksView) {
 
     private lateinit var tasksRepository: TasksRepository

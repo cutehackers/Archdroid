@@ -16,7 +16,7 @@
 
 package com.example.android.architecture.blueprints.todoapp.addedittask
 
-import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
+import app.junhyounglee.archroid.annotations.MvpPresenter
 import com.example.android.architecture.blueprints.todoapp.Injection
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
@@ -32,9 +32,12 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksData
  *
  * @param isDataMissing whether data needs to be loaded or not (for config changes)
  */
+@MvpPresenter(AddEditTaskContract.View::class, AddEditTaskContract.Presenter::class)
 class AddEditTaskPresenter(
-    addTaskView: AddEditTaskView
-) : MvpPresenter<AddEditTaskView>(addTaskView), TasksDataSource.GetTaskCallback {
+    addTaskView: AddEditTaskContract.View,
+    private val taskId: String?,
+    override var isDataMissing: Boolean
+) : MvpAddEditTaskPresenter(addTaskView), TasksDataSource.GetTaskCallback {
 
     private lateinit var tasksRepository: TasksDataSource
 
@@ -50,7 +53,7 @@ class AddEditTaskPresenter(
             view.setTitle(task.title)
             view.setDescription(task.description)
         }
-        view.isDataMissing = false
+        isDataMissing = false
     }
 
     override fun onDataNotAvailable() {
@@ -61,21 +64,21 @@ class AddEditTaskPresenter(
     }
 
     fun start() {
-        if (view.taskId != null && view.isDataMissing) {
+        if (taskId != null && isDataMissing) {
             populateTask()
         }
     }
 
-    fun saveTask(title: String, description: String) {
-        if (view.taskId == null) {
+    override fun saveTask(title: String, description: String) {
+        if (taskId == null) {
             createTask(title, description)
         } else {
             updateTask(title, description)
         }
     }
 
-    fun populateTask() {
-        view.taskId?.apply {
+    override fun populateTask() {
+        taskId?.apply {
             tasksRepository.getTask(this, this@AddEditTaskPresenter)
         } ?: throw RuntimeException("populateTask() was called but task is new.")
     }
@@ -91,7 +94,7 @@ class AddEditTaskPresenter(
     }
 
     private fun updateTask(title: String, description: String) {
-        view.taskId?.apply {
+        taskId?.apply {
             tasksRepository.saveTask(Task(title, description, this))
             view.showTasksList() // After an edit, go back to the list.
         } ?: throw RuntimeException("updateTask() was called but task is new.")

@@ -15,7 +15,7 @@
  */
 package com.example.android.architecture.blueprints.todoapp.taskdetail
 
-import app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter
+import app.junhyounglee.archroid.annotations.MvpPresenter
 import com.example.android.architecture.blueprints.todoapp.Injection
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
@@ -25,7 +25,8 @@ import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepo
  * Listens to user actions from the UI ([TaskDetailFragment]), retrieves the data and updates
  * the UI as required.
  */
-class TaskDetailPresenter(detailView: TaskDetailView) : MvpPresenter<TaskDetailView>(detailView) {
+@MvpPresenter(TaskDetailContract.View::class, TaskDetailContract.Presenter::class)
+class TaskDetailPresenter(detailView: TaskDetailContract.View) : MvpTaskDetailPresenter(detailView) {
 
     private lateinit var tasksRepository: TasksRepository
 
@@ -76,7 +77,7 @@ class TaskDetailPresenter(detailView: TaskDetailView) : MvpPresenter<TaskDetailV
         })
     }
 
-    fun editTask() {
+    override fun editTask() {
         if (view.taskId.isEmpty()) {
             view.showMissingTask()
             return
@@ -84,7 +85,7 @@ class TaskDetailPresenter(detailView: TaskDetailView) : MvpPresenter<TaskDetailV
         view.showEditTask(view.taskId)
     }
 
-    fun deleteTask() {
+    override fun deleteTask() {
         if (view.taskId.isEmpty()) {
             view.showMissingTask()
             return
@@ -93,7 +94,7 @@ class TaskDetailPresenter(detailView: TaskDetailView) : MvpPresenter<TaskDetailV
         view.showTaskDeleted()
     }
 
-    fun completeTask() {
+    override fun completeTask() {
         if (view.taskId.isEmpty()) {
             view.showMissingTask()
             return
@@ -102,7 +103,7 @@ class TaskDetailPresenter(detailView: TaskDetailView) : MvpPresenter<TaskDetailV
         view.showTaskMarkedComplete()
     }
 
-    fun activateTask() {
+    override fun activateTask() {
         if (view.taskId.isEmpty()) {
             view.showMissingTask()
             return

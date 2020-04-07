@@ -27,7 +27,7 @@ import com.example.android.architecture.blueprints.todoapp.R
 /**
  * Main UI for the statistics screen.
  */
-@MvpFragmentView(StatisticsView::class, R.layout.statistics_frag)
+@MvpFragmentView(StatisticsContract.View::class, R.layout.statistics_frag)
 @BindMvpPresenter(StatisticsPresenter::class)
 class StatisticsFragment : MvpStatisticsFragment() {
 

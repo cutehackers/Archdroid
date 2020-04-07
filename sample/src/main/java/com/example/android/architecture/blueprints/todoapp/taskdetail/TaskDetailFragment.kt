@@ -33,7 +33,7 @@ import com.google.android.material.snackbar.Snackbar
 /**
  * Main UI for the task detail screen.
  */
-@MvpFragmentView(TaskDetailView::class, R.layout.taskdetail_frag)
+@MvpFragmentView(TaskDetailContract.View::class, R.layout.taskdetail_frag)
 @BindMvpPresenter(TaskDetailPresenter::class)
 class TaskDetailFragment : MvpTaskDetailFragment() {
 

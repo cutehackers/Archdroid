@@ -33,13 +33,9 @@ import com.google.android.material.snackbar.Snackbar
 /**
  * Main UI for the add task screen. Users can enter a task title and description.
  */
-@MvpFragmentView(AddEditTaskView::class, R.layout.addtask_frag)
+@MvpFragmentView(AddEditTaskContract.View::class, R.layout.addtask_frag)
 @BindMvpPresenter(AddEditTaskPresenter::class)
 class AddEditTaskFragment : MvpAddEditTaskFragment() {
-
-    override val taskId: String? = null
-
-    override var isDataMissing: Boolean = true
 
     override var isActive = false
         get() = isAdded
@@ -69,23 +65,12 @@ class AddEditTaskFragment : MvpAddEditTaskFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val root: View = super.onCreateView(inflater, container, savedInstanceState) as View
-        root.apply {
+        with(root) {
             title = findViewById(R.id.add_task_title)
             description = findViewById(R.id.add_task_description)
         }
         setHasOptionsMenu(true)
-
-        // Prevent the presenter from loading data from the repository if this is a config change.
-        // Data might not have loaded when the config change happen, so we saved the state.
-        isDataMissing = savedInstanceState?.getBoolean(SHOULD_LOAD_DATA_FROM_REPO_KEY) ?: true
-
         return root
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState.apply {
-            putBoolean(SHOULD_LOAD_DATA_FROM_REPO_KEY, isDataMissing)
-        })
     }
 
     override fun showEmptyTaskError() {
