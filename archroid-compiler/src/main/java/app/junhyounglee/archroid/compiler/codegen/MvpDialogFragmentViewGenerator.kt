@@ -3,7 +3,6 @@ package app.junhyounglee.archroid.compiler.codegen
 import app.junhyounglee.archroid.compiler.Id
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import javax.annotation.processing.Filer
 import javax.annotation.processing.ProcessingEnvironment
 
 class MvpDialogFragmentViewGenerator (processingEnv: ProcessingEnvironment)
@@ -21,7 +20,10 @@ class MvpDialogFragmentViewGenerator (processingEnv: ProcessingEnvironment)
                 .addProperty(getPropertyRootView())
                 .addProperty(getPropertyIsRootViewAlive())
                 .addFunction(getFunCreateMvpView(argument))
-                .addFunction(getFunOnCreateMvpPresenter(argument))
+
+            if (bindingNeeded) {
+                builder.addFunction(getFunOnCreateMvpPresenter(argument))
+            }
 
             layoutResId.let { id ->
                 if (id.value != 0) {
@@ -89,19 +91,14 @@ class MvpDialogFragmentViewGenerator (processingEnv: ProcessingEnvironment)
         return FunSpec.builder("onCreateMvpPresenter")
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
             .returns(argument.presenterType)
-            .addStatement("return %T(this)", argument.presenterType)
+            .addStatement("return %T.of(this).get(%T::class.java)",
+                ClassName(PRESENTER_PACKAGE, PRESENTER_PROVIDER_CLASS),
+                argument.presenterType)
             .build()
     }
 
 
     companion object {
-        private const val CORE_PACKAGE = "app.junhyounglee.archroid.runtime.core"
         private const val LIFECYCLE_CONTROLLER_CLASS = "MvpDialogFragmentLifecycleController"
-
-        private const val VIEW_PACKAGE = "$CORE_PACKAGE.view"
-        private const val VIEW_CLASS = "RootViewImpl"
-
-        private const val ROOT_VIEW_PACKAGE = "android.view"
-        private const val ROOT_VIEW_CLASS = "ViewGroup"
     }
 }

@@ -1,7 +1,6 @@
 package app.junhyounglee.archroid.compiler
 
 import app.junhyounglee.archroid.annotations.BindMvpPresenter
-import app.junhyounglee.archroid.annotations.BindMvpPresenterFactory
 import app.junhyounglee.archroid.annotations.MvpActivityView
 import app.junhyounglee.archroid.compiler.codegen.ClassArgument
 import app.junhyounglee.archroid.compiler.codegen.MvpActivityViewGenerator
@@ -88,11 +87,6 @@ class MvpActivityViewCoordinator(processingEnv: ProcessingEnvironment)
                         // failed to parse annotation argument
                         return@parseMvpActivityView null
                     }
-                }
-
-                // parse BindMvpPresenterFactory annotation
-                annotationName.contentEquals(BindMvpPresenterFactory::class.simpleName) -> {
-
                 }
 
                 // parse BindMvpPresenter annotation
