@@ -41,4 +41,8 @@ abstract class AbsMvpPresenter<VIEW : MvpView>(private val _view: VIEW)
     open fun onDestroy() {
 
     }
+
+    override fun onClear() {
+
+    }
 }

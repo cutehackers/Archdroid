@@ -44,6 +44,17 @@ abstract class SourceFileGenerator<ARGS : ClassArgument>(private val processingE
 
     companion object {
         const val DOCUMENTATION = "Auto generated class from Archroid"
+
+        internal const val CORE_PACKAGE = "app.junhyounglee.archroid.runtime.core"
+
+        internal const val VIEW_PACKAGE = "$CORE_PACKAGE.view"
+        internal const val VIEW_CLASS = "RootViewImpl"
+
+        internal const val ROOT_VIEW_PACKAGE = "android.view"
+        internal const val ROOT_VIEW_CLASS = "ViewGroup"
+
+        internal const val PRESENTER_PACKAGE = "$CORE_PACKAGE.presenter"
+        internal const val PRESENTER_PROVIDER_CLASS = "PresenterProviders"
     }
 }
 

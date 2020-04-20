@@ -22,7 +22,10 @@ class MvpActivityViewGenerator(processingEnv: ProcessingEnvironment)
                 .addProperty(getPropertyIsRootViewAlive())
                 .addFunction(getFuncGetContext(argument))
                 .addFunction(getFunCreateMvpView(argument))
-                .addFunction(getFunOnCreateMvpPresenter(argument))
+
+            if (bindingNeeded) {
+                builder.addFunction(getFunOnCreateMvpPresenter(argument))
+            }
 
             layoutResId.let { id ->
                 if (id.value != 0) {
@@ -94,26 +97,23 @@ class MvpActivityViewGenerator(processingEnv: ProcessingEnvironment)
             .build()
     }
 
+    /**
+     * implement a methods that returns a default presenter
+     *  ex) PresenterProviders.of(this).get(SamplePresenter::class.java)
+     * or presenter can be manually implemented
+     */
     private fun getFunOnCreateMvpPresenter(argument: MvpViewClassArgument): FunSpec {
         return FunSpec.builder("onCreateMvpPresenter")
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
             .returns(argument.presenterType)
-            .addStatement("return %T(this)", argument.presenterType)
+            .addStatement("return %T.of(this).get(%T::class.java)",
+                ClassName(PRESENTER_PACKAGE, PRESENTER_PROVIDER_CLASS),
+                argument.presenterType)
             .build()
     }
 
 
     companion object {
-        private const val CORE_PACKAGE = "app.junhyounglee.archroid.runtime.core"
         private const val LIFECYCLE_CONTROLLER_CLASS = "MvpActivityLifecycleController"
-
-        private const val VIEW_PACKAGE = "$CORE_PACKAGE.view"
-        private const val VIEW_CLASS = "RootViewImpl"
-
-        private const val CONTEXT_PACKAGE = "android.content"
-        private const val CONTEXT_CLASS = "Context"
-
-        private const val ROOT_VIEW_PACKAGE = "android.view"
-        private const val ROOT_VIEW_CLASS = "ViewGroup"
     }
 }

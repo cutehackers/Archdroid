@@ -69,9 +69,14 @@ abstract class MvpBaseCoordinator(processingEnv: ProcessingEnvironment, klassTyp
         val annotationName = annotationMirror.annotationType.asElement().simpleName
 
         annotationMirror.elementValues.forEach { entry: Map.Entry<ExecutableElement, AnnotationValue> ->
-            if (entry.key.simpleName.contentEquals("presenter")) {
-                getPresenterType(annotationName, entry.toPair())?.also { presenterType: ClassName ->
-                    builder.setPresenterType(presenterType)
+            when {
+                entry.key.simpleName.contentEquals("presenter") -> {
+                    getPresenterType(annotationName, entry.toPair())?.also { presenterType: ClassName ->
+                        builder.setPresenterType(presenterType)
+                    }
+                }
+                entry.key.simpleName.contentEquals("bindingNeeded") -> {
+                    builder.setPresenterBindingNeeded(bindingNeeded = entry.value.value as Boolean)
                 }
             }
         }
