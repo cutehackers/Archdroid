@@ -9,7 +9,8 @@ class MvpViewClassArgument(
     className: ClassName,
     val viewType: ClassName,
     val layoutResId: Id,
-    val presenterType: ClassName
+    val presenterType: ClassName,
+    val bindingNeeded: Boolean
 ) : ClassArgument(targetTypeName, className) {
 
     class Builder {
@@ -18,6 +19,7 @@ class MvpViewClassArgument(
         private lateinit var viewType: ClassName
         private lateinit var layoutResId: Id
         private lateinit var presenterType: ClassName
+        private var bindingNeeded: Boolean = true
 
         fun setTargetTypeName(targetTypeName: TypeName) = apply { this.targetTypeName = targetTypeName }
 
@@ -25,9 +27,13 @@ class MvpViewClassArgument(
 
         fun setViewType(viewType: ClassName) = apply { this.viewType = viewType }
 
+        fun setContentView(layoutResId: Id) = apply { this.layoutResId = layoutResId }
+
         fun setPresenterType(presenterType: ClassName) = apply { this.presenterType = presenterType }
 
-        fun setContentView(layoutResId: Id) = apply { this.layoutResId = layoutResId }
+        fun setPresenterBindingNeeded(bindingNeeded: Boolean) = apply {
+            this.bindingNeeded = bindingNeeded
+        }
 
         fun isValid(): Boolean {
             return this::targetTypeName.isInitialized
@@ -42,7 +48,8 @@ class MvpViewClassArgument(
             className,
             viewType,
             layoutResId,
-            presenterType
+            presenterType,
+            bindingNeeded
         )
     }
 
