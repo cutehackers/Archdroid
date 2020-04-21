@@ -25,7 +25,7 @@ class ProfileFragmentView : MvpProfileFragmentView() {
     private fun onRunDialogClick() {
         fragmentManager?.beginTransaction()?.apply {
             addToBackStack(null)
-            WelcomeDialogFragmentView().show(this, "dialog")
+            WelcomeDialogFragmentView.newInstance("Welcome to Android").show(this, "dialog")
         }
 
         fragmentManager?.let { fmtMgr ->
@@ -35,11 +35,10 @@ class ProfileFragmentView : MvpProfileFragmentView() {
                 }
 
                 addToBackStack(null)
-                WelcomeDialogFragmentView().show(this, "dialog")
+                WelcomeDialogFragmentView.newInstance("Welcome to Android").show(this, "dialog")
             }
         }
     }
-
 }
 
 interface ProfileView : MvpView {
