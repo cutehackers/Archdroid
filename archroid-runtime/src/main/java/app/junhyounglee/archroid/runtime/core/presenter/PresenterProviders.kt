@@ -54,8 +54,8 @@ object PresenterProviders {
 
     class DefaultFactory(private val application: Application)
         : PresenterProvider.NewInstanceFactory() {
-        override fun <T : MvpPresenter<out MvpView>> create(model: Class<T>): T {
-            return super.create(model)
+        override fun <V: MvpView, P : MvpPresenter<V>> create(presenterType: Class<P>, viewType: Class<V>, view: V): P {
+            return super.create(presenterType, viewType, view)
         }
     }
 }

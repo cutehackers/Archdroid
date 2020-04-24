@@ -38,7 +38,9 @@ buildscript {
     deps = [
       'kotlin': [
         'stdlib_jdk7': "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin",
-        'stdlib_jdk8': "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+        'stdlib_jdk8': "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin",
+        'reflect': "org.jetbrains.kotlin:kotlin-reflect:$versions.kotlin_reflect",
+        'poet': "com.squareup:kotlinpoet:$versions.kotlin_poet"
       ],
       'androidx': [
         'annotation': "androidx.annotation:annotation:$versions.androidx_annotations",

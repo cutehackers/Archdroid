@@ -126,11 +126,11 @@ class TaskDetailFragment : MvpTaskDetailFragment() {
     }
 
     override fun showTaskMarkedComplete() {
-        rootView.showSnackBar(getString(R.string.task_marked_complete), Snackbar.LENGTH_LONG)
+        container.showSnackBar(getString(R.string.task_marked_complete), Snackbar.LENGTH_LONG)
     }
 
     override fun showTaskMarkedActive() {
-        rootView.showSnackBar(getString(R.string.task_marked_active), Snackbar.LENGTH_LONG)
+        container.showSnackBar(getString(R.string.task_marked_active), Snackbar.LENGTH_LONG)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -178,7 +178,7 @@ class TasksFragment : MvpTasksFragment() {
     }
 
     override fun setLoadingIndicator(active: Boolean) {
-        val root = rootView
+        val root = container
         with(root.findViewById<SwipeRefreshLayout>(R.id.refresh_layout)) {
             // Make sure setRefreshing() is called after the layout is done with everything else.
             post { isRefreshing = active }
@@ -259,7 +259,7 @@ class TasksFragment : MvpTasksFragment() {
     }
 
     private fun showMessage(message: String) {
-        rootView.showSnackBar(message, Snackbar.LENGTH_LONG)
+        container.showSnackBar(message, Snackbar.LENGTH_LONG)
     }
 
     private class TasksAdapter(tasks: List<Task>, private val itemListener: TaskItemListener)

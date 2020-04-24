@@ -1,44 +1,46 @@
 package app.junhyounglee.archroid.runtime.core.presenter
 
 import app.junhyounglee.archroid.runtime.core.view.MvpView
-import java.lang.RuntimeException
 
+/**
+ * TODO create a method that binds view instance to Presenter
+ */
 class PresenterProvider(
     private val presenterStore: PresenterStore,
     private val factory: Factory
 ) {
 
-    fun <T : MvpPresenter<out MvpView>> get(key: String, model: Class<T>): T {
-        var presenter: MvpPresenter<out MvpView>? = presenterStore.get(key)
-        if (model.isInstance(presenter)) {
+    fun <V: MvpView, P : MvpPresenter<V>> get(key: String, presenterType: Class<P>, viewType: Class<V>, view: V): P {
+        var instance: MvpPresenter<out MvpView>? = presenterStore.get(key)
+        if (presenterType.isInstance(instance)) {
             @Suppress("UNCHECKED_CAST")
-            return presenter as T
+            return instance as P
         }
 
-        presenter = factory.create(model)
-        presenterStore.put(key, presenter)
-        return presenter
+        instance = factory.create(presenterType, viewType, view)
+        presenterStore.put(key, instance)
+        return instance
     }
 
-    fun <T : MvpPresenter<out MvpView>> get(model: Class<T>): T {
-        val name = model.canonicalName
+    fun <V : MvpView, P : MvpPresenter<V>> get(presenterType: Class<P>, viewType: Class<V>, view: V): P {
+        val name = presenterType.canonicalName
             ?: throw IllegalArgumentException("Local and anonymous classes can not be Presenters")
-        return get("$DEFAULT_KEY:$name", model)
+        return get("$DEFAULT_KEY:$name", presenterType, viewType, view)
     }
 
 
     interface Factory {
-        fun <T : MvpPresenter<out MvpView>> create(model: Class<T>): T
+        fun <V: MvpView, P : MvpPresenter<V>> create(presenterType: Class<P>, viewType: Class<V>, view: V): P
     }
 
     open class NewInstanceFactory : Factory {
-        override fun <T : MvpPresenter<out MvpView>> create(model: Class<T>): T {
+        override fun <V: MvpView, P : MvpPresenter<V>> create(presenterType: Class<P>, viewType: Class<V>, view: V): P {
             return try {
-                model.newInstance()
+                presenterType.getConstructor(viewType).newInstance(view)
             } catch (e: InstantiationException) {
-                throw RuntimeException("Cannot create an instance of $model", e)
+                throw RuntimeException("Cannot create an instance of $presenterType", e)
             } catch (e: IllegalAccessException) {
-                throw RuntimeException("Cannot create an instance of $model", e)
+                throw RuntimeException("Cannot create an instance of $presenterType", e)
             }
         }
     }

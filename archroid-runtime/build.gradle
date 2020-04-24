@@ -38,6 +38,7 @@ dependencies {
     api project(':archroid-annotations')
 
     implementation deps.kotlin.stdlib_jdk8
+    implementation deps.kotlin.reflect
     implementation deps.androidx.appcompat
 
     testImplementation deps.test.junit
