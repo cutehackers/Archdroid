@@ -12,9 +12,9 @@ interface ArchView {
     @get:LayoutRes
     val layoutResId: Int
 
-    var rootView: ViewGroup
+    var container: ViewGroup
 
-    val isRootViewAlive: Boolean
+    val isContainerAlive: Boolean
 
     fun getContext(): Context?
 }

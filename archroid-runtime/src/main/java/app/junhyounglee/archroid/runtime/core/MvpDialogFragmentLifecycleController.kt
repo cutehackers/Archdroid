@@ -66,16 +66,20 @@ abstract class MvpDialogFragmentLifecycleController<VIEW : MvpView, PRESENTER : 
     : DialogFragment()
     , MvpLifecycleController<VIEW, PRESENTER> {
 
+    private lateinit var _presenter: PRESENTER
+
     override val view: VIEW by lazy {
         onCreateMvpView().also {
-            // to create presenter instance right after view created
-            it.presenter
+            _presenter = onCreateMvpPresenter(it)
         }
     }
 
-    override val presenter: PRESENTER by lazy {
-        onCreateMvpPresenter()
-    }
+    override val presenter: PRESENTER
+        get() = if (this::_presenter.isInitialized) {
+            _presenter
+        } else {
+            throw IllegalStateException("Presenter is not initialized yet!")
+        }
 
     override val hostActivity: FragmentActivity?
         get() = activity
@@ -86,7 +90,7 @@ abstract class MvpDialogFragmentLifecycleController<VIEW : MvpView, PRESENTER : 
 
     abstract fun onCreateMvpView(): VIEW
 
-    abstract fun onCreateMvpPresenter(): PRESENTER
+    abstract fun onCreateMvpPresenter(view: VIEW): PRESENTER
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -117,6 +121,6 @@ abstract class MvpDialogFragmentLifecycleController<VIEW : MvpView, PRESENTER : 
     }
 
     private fun onRootViewCreated(container: ViewGroup) {
-        view.rootView = container
+        view.container = container
     }
 }
