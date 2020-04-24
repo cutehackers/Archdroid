@@ -98,7 +98,7 @@ class SampleActivityView : MvpSampleActivityView() {
     }
 
     override fun say(message: String) {
-        rootView.titleView.text = message
+        container.titleView.text = message
     }
 }
 

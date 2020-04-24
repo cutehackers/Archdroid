@@ -4,69 +4,69 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-  compileSdkVersion compileSdk
+    compileSdkVersion compileSdk
 
-  defaultConfig {
-    applicationId "app.junhyounglee.archroid.sample"
-    minSdkVersion minSdk
-    targetSdkVersion targetSdk
-    versionCode 1
-    versionName "1.0"
-    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-  }
-
-  buildTypes {
-    release {
-      minifyEnabled true
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-      testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+    defaultConfig {
+        applicationId "app.junhyounglee.archroid.sample"
+        minSdkVersion minSdk
+        targetSdkVersion targetSdk
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-  }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+        }
+    }
 }
 
 dependencies {
-  implementation fileTree(dir: 'libs', include: ['*.jar'])
-  implementation project(':archroid-runtime')
-  kapt project(':archroid-compiler')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':archroid-runtime')
+    kapt project(':archroid-compiler')
 
-  implementation deps.kotlin.stdlib_jdk7
+    implementation deps.kotlin.stdlib_jdk7
 
-  // App dependencies
-  implementation deps.androidx.appcompat
-  implementation deps.androidx.cardview
-  implementation deps.androidx.recyclerview
-  implementation deps.androidx.room_runtime
-  implementation deps.androidx.annotation
-  implementation deps.androidx.legacy_support_v4
-  implementation deps.androidx.test.espresso_idling_resource
-  implementation deps.google.material
-  implementation deps.google.guava
-  kapt deps.androidx.room_compiler
+    // App dependencies
+    implementation deps.androidx.appcompat
+    implementation deps.androidx.cardview
+    implementation deps.androidx.recyclerview
+    implementation deps.androidx.room_runtime
+    implementation deps.androidx.annotation
+    implementation deps.androidx.legacy_support_v4
+    implementation deps.androidx.test.espresso_idling_resource
+    implementation deps.google.material
+    implementation deps.google.guava
+    kapt deps.androidx.room_compiler
 
-  // Dependencies for local unit tests
-  testImplementation deps.test.junit
-  testImplementation deps.test.mockito_core
-  testImplementation deps.test.hamcrest_all
+    // Dependencies for local unit tests
+    testImplementation deps.test.junit
+    testImplementation deps.test.mockito_core
+    testImplementation deps.test.hamcrest_all
 
-  // Dependencies for Android unit tests
-  androidTestImplementation deps.test.junit
-  androidTestImplementation deps.test.mockito_core
-  androidTestImplementation deps.test.dexmaker_mockito
+    // Dependencies for Android unit tests
+    androidTestImplementation deps.test.junit
+    androidTestImplementation deps.test.mockito_core
+    androidTestImplementation deps.test.dexmaker_mockito
 
-  // Android Testing Support Library - Instrumented testing
-  androidTestImplementation deps.androidx.test.runner
-  androidTestImplementation deps.androidx.test.rules
-  androidTestImplementation deps.androidx.test.room_testing
-  androidTestImplementation deps.androidx.test.espresso_core
-  androidTestImplementation deps.androidx.test.espresso_contrib
-  androidTestImplementation deps.androidx.test.espresso_intents
-  androidTestImplementation deps.androidx.test.idling_concurrent
-  androidTestImplementation deps.androidx.test.espresso_idling_resource
+    // Android Testing Support Library - Instrumented testing
+    androidTestImplementation deps.androidx.test.runner
+    androidTestImplementation deps.androidx.test.rules
+    androidTestImplementation deps.androidx.test.room_testing
+    androidTestImplementation deps.androidx.test.espresso_core
+    androidTestImplementation deps.androidx.test.espresso_contrib
+    androidTestImplementation deps.androidx.test.espresso_intents
+    androidTestImplementation deps.androidx.test.idling_concurrent
+    androidTestImplementation deps.androidx.test.espresso_idling_resource
 
-  // Resolve conflicts between main and test APK:
-  androidTestImplementation deps.androidx.annotation
-  androidTestImplementation deps.androidx.legacy_support_v4
-  androidTestImplementation deps.androidx.recyclerview
-  androidTestImplementation deps.androidx.appcompat
-  androidTestImplementation deps.google.material
+    // Resolve conflicts between main and test APK:
+    androidTestImplementation deps.androidx.annotation
+    androidTestImplementation deps.androidx.legacy_support_v4
+    androidTestImplementation deps.androidx.recyclerview
+    androidTestImplementation deps.androidx.appcompat
+    androidTestImplementation deps.google.material
 }

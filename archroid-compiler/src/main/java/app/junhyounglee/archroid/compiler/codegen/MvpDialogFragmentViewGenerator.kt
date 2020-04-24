@@ -56,7 +56,7 @@ class MvpDialogFragmentViewGenerator (processingEnv: ProcessingEnvironment)
 
     private fun getPropertyRootView(): PropertySpec {
         val rootViewType = ClassName(ROOT_VIEW_PACKAGE, ROOT_VIEW_CLASS)
-        return PropertySpec.builder("rootView", rootViewType)
+        return PropertySpec.builder("container", rootViewType)
             .mutable()
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
             .getter(
@@ -73,7 +73,7 @@ class MvpDialogFragmentViewGenerator (processingEnv: ProcessingEnvironment)
     }
 
     private fun getPropertyIsRootViewAlive(): PropertySpec {
-        return PropertySpec.builder("isRootViewAlive", Boolean::class)
+        return PropertySpec.builder("isContainerAlive", Boolean::class)
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
             .getter(FunSpec.getterBuilder().addStatement("return impl.isViewAlive").build())
             .build()
@@ -90,10 +90,12 @@ class MvpDialogFragmentViewGenerator (processingEnv: ProcessingEnvironment)
     private fun getFunOnCreateMvpPresenter(argument: MvpViewClassArgument): FunSpec {
         return FunSpec.builder("onCreateMvpPresenter")
             .addModifiers(KModifier.PUBLIC, KModifier.OVERRIDE)
+            .addParameter("view", argument.viewType)
             .returns(argument.presenterType)
-            .addStatement("return %T.of(this).get(%T::class.java)",
+            .addStatement("return %T.of(this).get(%T::class.java, %T::class.java, view)",
                 ClassName(PRESENTER_PACKAGE, PRESENTER_PROVIDER_CLASS),
-                argument.presenterType)
+                argument.presenterType,
+                argument.viewType)
             .build()
     }
 

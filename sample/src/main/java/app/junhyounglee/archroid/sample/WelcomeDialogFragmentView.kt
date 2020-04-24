@@ -20,11 +20,11 @@ import java.lang.IllegalStateException
 @BindMvpPresenter(WelcomePresenter::class, bindingNeeded = false)
 class WelcomeDialogFragmentView : MvpWelcomeDialogFragmentView() {
 
-    override fun onCreateMvpPresenter(): WelcomePresenter {
+    override fun onCreateMvpPresenter(view: WelcomeView): WelcomePresenter {
         val message = arguments?.getString(ARGS_MESSAGE) ?: ""
 
         val factory = WelcomePresenterFactory(this, message)
-        return PresenterProviders.of(this, factory).get(WelcomePresenter::class.java)
+        return PresenterProviders.of(this, factory).get(WelcomePresenter::class.java, WelcomeView::class.java, view)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,12 +62,14 @@ class WelcomePresenterFactory(
     private val message: String
 ) : PresenterProvider.Factory {
 
-    override fun <P : app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter<out MvpView>> create(
-        presenterType: Class<P>
+    override fun <V : MvpView, P : app.junhyounglee.archroid.runtime.core.presenter.MvpPresenter<V>> create(
+        presenterType: Class<P>,
+        viewType: Class<V>,
+        view: V
     ): P {
         if (presenterType.isAssignableFrom(WelcomePresenter::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return WelcomePresenter(view, message) as P
+            return WelcomePresenter(this.view, message) as P
         }
         throw IllegalArgumentException("Unknown presenter class")
     }
